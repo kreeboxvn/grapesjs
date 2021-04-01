@@ -175,7 +175,9 @@ export default (config = {}) => {
         'StyleManager',
         ['Styles', 'StyleManager'],
         'DeviceManager',
-        ['Devices', 'DeviceManager']
+        ['Devices', 'DeviceManager'],
+        'LayoutManager',
+        ['Layouts', 'LayoutManager']
       ].forEach(prop => {
         if (Array.isArray(prop)) {
           this[prop[0]] = em.get(prop[1]);

@@ -1,0 +1,23 @@
+.#{$lm-prefix} {
+  &header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 9px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+
+    &-title {
+      font-size: 18px;
+    }
+
+    &-buttons > button {
+      background: none;
+      color: inherit;
+      & > i {
+        padding: 5px;
+        font-size: 18px;
+        cursor: pointer;
+      }
+    }
+  }
+}
