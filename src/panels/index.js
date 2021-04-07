@@ -30,6 +30,7 @@ import Panel from './model/Panel';
 import Panels from './model/Panels';
 import PanelsView from './view/PanelsView';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   var c = {};
   var panels, PanelsViewObj;
@@ -59,7 +60,7 @@ export default () => {
       panels = new Panels(c.defaults);
       PanelsViewObj = new PanelsView({
         collection: panels,
-        config: c
+        config: c,
       });
       return this;
     },
@@ -239,6 +240,6 @@ export default () => {
       [c, panels, PanelsViewObj].forEach(i => (i = {}));
     },
 
-    Panel
+    Panel,
   };
 };

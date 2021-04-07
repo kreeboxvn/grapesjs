@@ -1,15 +1,13 @@
 import Backbone from 'backbone';
 import { isString, isObject, isFunction } from 'underscore';
 
-const $ = Backbone.$;
-
 export default Backbone.View.extend({
   tagName() {
     return this.model.get('tagName');
   },
 
   events: {
-    click: 'clicked'
+    click: 'clicked',
   },
 
   initialize(o) {
@@ -25,6 +23,7 @@ export default Backbone.View.extend({
     this.disableCls = `${ppfx}disabled`;
     this.btnsVisCls = `${pfx}visible`;
     this.className = pfx + 'btn' + (cls ? ' ' + cls : '');
+    this.contentContainerCls = `${pfx}btn-content-container`;
     this.listenTo(this.model, 'change', this.render);
     this.listenTo(this.model, 'change:active updateActive', this.updateActive);
     this.listenTo(this.model, 'checkActive', this.checkActive);
@@ -32,6 +31,7 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'change:attributes', this.updateAttributes);
     this.listenTo(this.model, 'change:className', this.updateClassName);
     this.listenTo(this.model, 'change:disable', this.updateDisable);
+    this.listenTo(this.model, 'change:content', this.updateContent);
 
     if (this.em && this.em.get) this.commands = this.em.get('Commands');
   },
@@ -118,6 +118,19 @@ export default Backbone.View.extend({
     this.$el[disable ? 'addClass' : 'removeClass'](disableCls);
   },
 
+  updateContent() {
+    const { model } = this;
+    if (!model.get('content')) {
+      return;
+    }
+
+    const contentContainer = document.createElement('div');
+    contentContainer.className = this.contentContainerCls;
+    contentContainer.appendChild(model.get('content'));
+
+    this.$el.append(contentContainer);
+  },
+
   /**
    * Update active style status
    *
@@ -168,7 +181,8 @@ export default Backbone.View.extend({
     label && $el.append(label);
     this.checkActive();
     this.updateDisable();
+    this.updateContent();
 
     return this;
-  }
+  },
 });

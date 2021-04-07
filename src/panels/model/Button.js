@@ -16,7 +16,8 @@ export default Backbone.Model.extend({
     togglable: true,
     runDefaultCommand: true,
     stopDefaultCommand: false,
-    disable: false
+    disable: false,
+    useContainer: false,
   },
 
   initialize(options) {
@@ -24,5 +25,5 @@ export default Backbone.Model.extend({
       var Buttons = require('./Buttons').default;
       this.set('buttons', new Buttons(this.get('buttons')));
     }
-  }
+  },
 });

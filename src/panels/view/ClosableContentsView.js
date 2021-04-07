@@ -1,6 +1,6 @@
 import Backbone from 'backbone';
-import ButtonView from './ButtonView';
 import { result } from 'underscore';
+import ClosableContentView from './ClosableContentView';
 
 export default Backbone.View.extend({
   initialize(o) {
@@ -10,7 +10,7 @@ export default Backbone.View.extend({
     this.parentM = this.opt.parentM || null;
     this.listenTo(this.collection, 'add', this.addTo);
     this.listenTo(this.collection, 'reset remove', this.render);
-    this.className = this.pfx + 'buttons';
+    this.className = this.pfx + 'closable-contents';
   },
 
   /**
@@ -32,7 +32,7 @@ export default Backbone.View.extend({
    * */
   addToCollection(model, fragmentEl) {
     const fragment = fragmentEl || null;
-    const viewObject = ButtonView;
+    const viewObject = ClosableContentView;
     const el = model.get('el');
     const view = new viewObject({
       el,

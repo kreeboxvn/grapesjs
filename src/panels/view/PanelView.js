@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
 import ButtonsView from './ButtonsView';
+import ClosableContentsView from './ClosableContentsView';
 
 export default Backbone.View.extend({
   initialize(o) {
@@ -9,12 +10,21 @@ export default Backbone.View.extend({
     this.pfx = config.stylePrefix || '';
     this.ppfx = config.pStylePrefix || '';
     this.buttons = model.get('buttons');
+    this.closableContents = model.get('closableContents');
     this.className = this.pfx + 'panel';
+    this.classNameContainer = this.pfx + 'panel-container';
     this.id = this.pfx + model.get('id');
+    this.contentClosableList = {};
     this.listenTo(model, 'change:appendContent', this.appendContent);
     this.listenTo(model, 'change:content', this.updateContent);
     this.listenTo(model, 'change:visible', this.toggleVisible);
+    this.listenTo(model, 'open', this.open);
+    this.listenTo(model, 'close', this.close);
     model.view = this;
+  },
+
+  events: {
+    'click .panel-close': 'close',
   },
 
   /**
@@ -29,6 +39,16 @@ export default Backbone.View.extend({
    * */
   updateContent() {
     this.$el.html(this.model.get('content'));
+  },
+
+  close() {
+    this.$el.addClass(`${this.ppfx}hidden`);
+    return;
+  },
+
+  open() {
+    this.$el.removeClass(`${this.ppfx}hidden`);
+    return;
   },
 
   toggleVisible() {
@@ -104,10 +124,10 @@ export default Backbone.View.extend({
             left: 0,
             top: 0,
             width,
-            height
+            height,
           };
         },
-        ...resizable
+        ...resizable,
       });
       resizer.blur = () => {};
       resizer.focus(this.el);
@@ -118,17 +138,27 @@ export default Backbone.View.extend({
     const $el = this.$el;
     const ppfx = this.ppfx;
     const cls = `${this.className} ${this.id} ${ppfx}one-bg ${ppfx}two-color`;
+
     $el.addClass(cls);
 
     if (this.buttons.length) {
       var buttons = new ButtonsView({
         collection: this.buttons,
-        config: this.config
+        config: this.config,
       });
       $el.append(buttons.render().el);
     }
 
+    // if (this.closableContents.length) {
+    const closableContents = new ClosableContentsView({
+      collection: this.closableContents,
+      config: this.config,
+    });
+    $el.append(closableContents.render().el);
+    // }
+
     $el.append(this.model.get('content'));
+
     return this;
-  }
+  },
 });

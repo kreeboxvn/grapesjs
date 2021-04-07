@@ -3,11 +3,8 @@ import pkg from './package.json';
 
 const rootDir = path.resolve(__dirname);
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default ({ config }) => ({
   ...config,
-  mode: 'development',
-  watch: true,
   output: {
     ...config.output,
     filename: 'grapes.min.js',
@@ -24,8 +21,8 @@ export default ({ config }) => ({
         loader: 'string-replace-loader',
         query: {
           search: '<# VERSION #>',
-          replace: pkg.version,
-        },
+          replace: pkg.version
+        }
       },
       ...config.module.rules,
     ],
@@ -36,6 +33,6 @@ export default ({ config }) => ({
       jquery: 'cash-dom',
       backbone: `${rootDir}/node_modules/backbone`,
       underscore: `${rootDir}/node_modules/underscore`,
-    },
+    }
   },
 });

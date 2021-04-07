@@ -29,8 +29,8 @@ $mainColor:         #444 !default; /* Light: #573454 Dark: #3b2639 -moz-linear-g
 $fontColor:         #ddd !default; /* l: #d8d7db */
 $fontColorActive:   #f8f8f8 !default;
 
-$mainDkColor:       rgba(0, 0, 0, 0.2) !default;/* darken($mainColor, 4%) - #383838 */
-$mainDklColor:      rgba(0, 0, 0, 0.1) !default;
+$mainDkColor:       #212121 !default;/* darken($mainColor, 4%) - #383838 */
+$mainDklColor:      #212121 !default;
 $mainLhColor:       rgba(255, 255, 255, 0.1) !default; /* #515151 */
 $mainLhlColor:      rgba(255, 255, 255, 0.7) !default;
 $fontColorDk:       #777 !default;

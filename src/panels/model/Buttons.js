@@ -67,5 +67,5 @@ export default Backbone.Collection.extend({
           model.get('buttons').disableAllButtonsExceptOne(except, r);
       }
     });
-  }
+  },
 });
