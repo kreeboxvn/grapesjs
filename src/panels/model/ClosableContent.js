@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import ClosableContents from './ClosableContents';
 
 export default Backbone.Model.extend({
   defaults: {
@@ -10,7 +11,8 @@ export default Backbone.Model.extend({
     options: {},
     active: false,
     attachedButton: null,
+    topContents: []
   },
 
-  initialize(options) {},
+  initialize(options) {}
 });

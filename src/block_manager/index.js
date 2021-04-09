@@ -31,6 +31,7 @@ import Blocks from './model/Blocks';
 import BlockCategories from './model/Categories';
 import BlocksView from './view/BlocksView';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   var c = {};
   var blocks, blocksVisible, blocksView;

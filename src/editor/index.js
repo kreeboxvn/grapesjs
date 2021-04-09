@@ -113,6 +113,7 @@ import defaults from './config/config';
 import EditorModel from './model/Editor';
 import EditorView from './view/EditorView';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default (config = {}) => {
   const c = {
     ...defaults,
@@ -175,7 +176,9 @@ export default (config = {}) => {
         'StyleManager',
         ['Styles', 'StyleManager'],
         'DeviceManager',
-        ['Devices', 'DeviceManager']
+        ['Devices', 'DeviceManager'],
+        'LayoutManager',
+        ['Layouts', 'LayoutManager']
       ].forEach(prop => {
         if (Array.isArray(prop)) {
           this[prop[0]] = em.get(prop[1]);

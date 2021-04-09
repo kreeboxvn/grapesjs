@@ -69,6 +69,7 @@ import ComponentText from './model/ComponentText';
 import ComponentTextView from './view/ComponentTextView';
 import ComponentWrapper from './model/ComponentWrapper';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   var c = {};
   let em;
@@ -396,9 +397,8 @@ export default () => {
 
       const isObj = result && result.constructor === Object;
 
+      this.clear();
       if ((result && result.length) || isObj) {
-        this.clear();
-
         // If the result is an object I consider it the wrapper
         if (isObj) {
           this.getWrapper().set(result);

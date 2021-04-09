@@ -35,6 +35,7 @@ import CssRulesView from './view/CssRulesView';
 import Selectors from 'selector_manager/model/Selectors';
 import Selector from 'selector_manager/model/Selector';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   let em;
   var c = {};
@@ -156,9 +157,8 @@ export default () => {
 
       if (isArray(obj)) {
         obj.length && rules.reset(obj);
-      } else if (obj) {
-        rules.reset(obj);
       }
+      rules.reset(obj);
 
       return obj;
     },

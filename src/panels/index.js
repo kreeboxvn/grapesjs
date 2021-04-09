@@ -60,7 +60,7 @@ export default () => {
       panels = new Panels(c.defaults);
       PanelsViewObj = new PanelsView({
         collection: panels,
-        config: c,
+        config: c
       });
       return this;
     },
@@ -201,6 +201,23 @@ export default () => {
     },
 
     /**
+     * Get closable content from the panel
+     * @param {string} panelId Panel's ID
+     * @param {string} id Closable Content's ID
+     * @return {ClosableContent|null}
+     * @example
+     * var closableContent = panelManager.getClosableContent('myPanel','myClosableContent');
+     */
+    getClosableContent(panelId, id) {
+      var pn = this.getPanel(panelId);
+      if (pn) {
+        var res = pn.get('buttons').where({ id });
+        return res.length ? res[0] : null;
+      }
+      return null;
+    },
+
+    /**
      * Render panels and buttons
      * @return {HTMLElement}
      * @private
@@ -240,6 +257,6 @@ export default () => {
       [c, panels, PanelsViewObj].forEach(i => (i = {}));
     },
 
-    Panel,
+    Panel
   };
 };

@@ -8,14 +8,15 @@ export default ({ config }) => ({
   ...config,
   mode: 'development',
   watch: true,
+  devtool: 'source-map',
   output: {
     ...config.output,
     filename: 'grapes.min.js',
-    libraryExport: 'default',
+    libraryExport: 'default'
   },
   devServer: {
     headers: { 'Access-Control-Allow-Origin': '*' },
-    disableHostCheck: true,
+    disableHostCheck: true
   },
   module: {
     rules: [
@@ -24,18 +25,18 @@ export default ({ config }) => ({
         loader: 'string-replace-loader',
         query: {
           search: '<# VERSION #>',
-          replace: pkg.version,
-        },
+          replace: pkg.version
+        }
       },
-      ...config.module.rules,
-    ],
+      ...config.module.rules
+    ]
   },
   resolve: {
     modules: ['src', 'node_modules'],
     alias: {
       jquery: 'cash-dom',
       backbone: `${rootDir}/node_modules/backbone`,
-      underscore: `${rootDir}/node_modules/underscore`,
-    },
-  },
+      underscore: `${rootDir}/node_modules/underscore`
+    }
+  }
 });

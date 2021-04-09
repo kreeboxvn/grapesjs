@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   // Style prefix
   stylePrefix: 'gjs-',
@@ -163,8 +164,10 @@ export default {
   listenToEl: [],
 
   // Import asynchronously CSS to use as icons
-  cssIcons:
+  cssIcons: [
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
+    'https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Round'
+  ],
 
   // Dom element
   el: '',

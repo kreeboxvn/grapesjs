@@ -56,7 +56,8 @@ const commandsDef = [
   ['component-exit', 'ComponentExit', 'select-parent'],
   ['component-delete', 'ComponentDelete'],
   ['component-style-clear', 'ComponentStyleClear'],
-  ['component-drag', 'ComponentDrag']
+  ['component-drag', 'ComponentDrag'],
+  ['open-layouts', 'OpenLayouts', 'open-layouts']
 ];
 
 export default () => {

@@ -4,9 +4,11 @@ const osm = 'open-sm';
 const otm = 'open-tm';
 const ola = 'open-layers';
 const obl = 'open-blocks';
+const olo = 'open-layouts';
 const ful = 'fullscreen';
 const prv = 'preview';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   stylePrefix: 'pn-',
 
@@ -80,6 +82,13 @@ export default {
           command: obl,
           togglable: 0,
           attributes: { title: 'Open Blocks' }
+        },
+        {
+          id: olo,
+          className: 'fa fa-file',
+          command: olo,
+          togglable: 0,
+          attributes: { title: 'Open Layouts' }
         }
       ]
     }

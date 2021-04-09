@@ -1,0 +1,66 @@
+.#{$lm-prefix} {
+  &footer {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+
+    &-title {
+      font-size: 18px;
+    }
+  }
+
+  &layout-manager {
+    text-align: left;
+    ul {
+      list-style: none;
+      padding-left: 15px;
+    }
+
+    .layout-item {
+      padding: 5px 15px 5px 0;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      .more-options {
+        position: relative;
+        display: none;
+        .options-list {
+          position: absolute;
+          top: 100%;
+          right: 0;
+          width: 140px;
+          filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.2))
+            drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.14))
+            drop-shadow(0px 1px 10px rgba(0, 0, 0, 0.12));
+          border-radius: 3px;
+
+          li {
+            padding: 8px 0;
+          }
+        }
+      }
+
+      &:hover,
+      &.focused {
+        background-color: $borderColor;
+      }
+
+      &:hover {
+        .more-options {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+.#{$pn-prefix} {
+  &closable-content {
+    &-container {
+      &.folder-form,
+      &.page-form {
+        min-width: 479px;
+      }
+    }
+  }
+}

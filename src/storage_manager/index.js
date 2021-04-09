@@ -40,6 +40,7 @@ const eventStart = 'storage:start';
 const eventEnd = 'storage:end';
 const eventError = 'storage:error';
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   var c = {};
   let em;

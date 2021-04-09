@@ -38,7 +38,7 @@
       padding: 42px 0 0;
       right: 0;
       width: $leftWidth;
-      overflow: auto;
+      overflow-x: auto;
       box-shadow: 0 0 5px $mainDkColor;
     }
   }
@@ -59,7 +59,7 @@
     font-size: 18px;
     margin-right: 5px;
     border-radius: 2px;
-    padding: 4px;
+    padding: 3px;
     cursor: pointer;
 
     &.#{$pn-prefix}active {
@@ -73,7 +73,6 @@
   }
 
   &panels {
-    height: 100%;
   }
 
   &left-views {
@@ -91,22 +90,30 @@
     .#{$pn-prefix}btn {
       margin-right: 0;
     }
-    position: relative;
   }
 
+  &closable-contents {
+    position: absolute;
+    top: 0;
+    left: 35px;
+    height: 100%;
+    overflow: auto;
+    display: flex;
+  }
   &closable-content {
     &-container {
       display: none;
+
       &.active {
         display: block;
       }
 
-      position: absolute;
-      top: 0;
-      left: 35px;
-      width: 200px;
+      &.sub-content {
+        border-left: none;
+      }
+
+      width: 239px;
       height: 100%;
-      overflow: auto;
 
       box-sizing: border-box;
     }
@@ -127,6 +134,12 @@
         font-weight: normal;
         font-size: 1rem;
         cursor: pointer;
+      }
+
+      &-right {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
     }
   }

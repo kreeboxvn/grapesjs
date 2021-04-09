@@ -24,7 +24,7 @@ export default Backbone.View.extend({
   },
 
   events: {
-    'click .panel-close': 'close',
+    'click .panel-close': 'close'
   },
 
   /**
@@ -124,10 +124,10 @@ export default Backbone.View.extend({
             left: 0,
             top: 0,
             width,
-            height,
+            height
           };
         },
-        ...resizable,
+        ...resizable
       });
       resizer.blur = () => {};
       resizer.focus(this.el);
@@ -144,7 +144,7 @@ export default Backbone.View.extend({
     if (this.buttons.length) {
       var buttons = new ButtonsView({
         collection: this.buttons,
-        config: this.config,
+        config: this.config
       });
       $el.append(buttons.render().el);
     }
@@ -152,7 +152,7 @@ export default Backbone.View.extend({
     // if (this.closableContents.length) {
     const closableContents = new ClosableContentsView({
       collection: this.closableContents,
-      config: this.config,
+      config: this.config
     });
     $el.append(closableContents.render().el);
     // }
@@ -160,5 +160,5 @@ export default Backbone.View.extend({
     $el.append(this.model.get('content'));
 
     return this;
-  },
+  }
 });
