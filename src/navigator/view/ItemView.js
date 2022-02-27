@@ -37,6 +37,12 @@ export default Backbone.View.extend({
     const name = model.getName();
     const icon = model.getIcon();
     const clsBase = `${pfx}layer`;
+    console.log('ahihi', {
+      item: this,
+      pfx,
+      ppfx,
+      model
+    });
 
     return `
       ${
@@ -58,6 +64,7 @@ export default Backbone.View.extend({
       <div class="${this.clsCount}" data-count>${count || ''}</div>
       <div class="${this.clsMove}" data-toggle-move>
         <i class="fa fa-arrows"></i>
+        hi
       </div>
       <div class="${this.clsChildren}"></div>`;
   },
