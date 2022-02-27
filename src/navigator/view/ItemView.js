@@ -45,28 +45,26 @@ export default Backbone.View.extend({
     });
 
     return `
-      ${
-        hidable
-          ? `<i class="${pfx}layer-vis fa fa-eye ${
-              this.isVisible() ? '' : 'fa-eye-slash'
-            }" data-toggle-visible></i>`
-          : ''
-      }
-      <div class="${clsTitleC}">
-        <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
-          <div class="${pfx}layer-title-inn" title="${name}">
-            <i class="${clsCaret}" data-toggle-open></i>
-            ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
-            <span class="${clsInput}" data-name>${name}</span>
+      <div class="${clsBase}-wrapper ${this.clsMove}" data-toggle-move>
+        ${
+          hidable
+            ? `<i class="${pfx}layer-vis fa fa-eye ${
+                this.isVisible() ? '' : 'fa-eye-slash'
+              }" data-toggle-visible></i>`
+            : ''
+        }
+        <div class="${clsTitleC}">
+          <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
+            <div class="${pfx}layer-title-inn" title="${name}">
+              <i class="${clsCaret}" data-toggle-open></i>
+              ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
+              <span class="${clsInput}" data-name>${name}</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="${this.clsCount}" data-count>${count || ''}</div>
-      <div class="${this.clsMove}" data-toggle-move>
-        <i class="fa fa-arrows"></i>
-        hi
-      </div>
-      <div class="${this.clsChildren}"></div>`;
+        <div class="${this.clsCount}" data-count>${count || ''}</div>
+        <div class="${this.clsChildren}"></div>
+      </div>`;
   },
 
   initialize(o = {}) {

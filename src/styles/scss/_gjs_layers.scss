@@ -54,6 +54,12 @@ $layerNameSpacing: 5px !default;
       }
     }
 
+    &-wrapper {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
     &-title {
       @extend .#{$app-prefix}category-title;
 
