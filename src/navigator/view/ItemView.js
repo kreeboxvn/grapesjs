@@ -35,7 +35,7 @@ export default Backbone.View.extend({
     const name = model.getName()
     const icon = model.getIcon()
     const clsBase = `${pfx}layer`
-    console.log('ahihi', {
+    console.log('ItemView', {
       item: this,
       pfx,
       ppfx,
