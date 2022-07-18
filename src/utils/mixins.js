@@ -1,10 +1,6 @@
 import { keys, isUndefined, isElement, isArray } from 'underscore';
 
-export const hasWin = () => typeof window !== 'undefined';
-
-export const toLowerCase = str => (str || '').toLowerCase();
-
-const elProt = hasWin() ? window.Element.prototype : {};
+const elProt = window.Element.prototype;
 const matches =
   elProt.matches ||
   elProt.webkitMatchesSelector ||
@@ -82,21 +78,21 @@ const shallowDiff = (objOrig, objNew) => {
   return result;
 };
 
-const on = (el, ev, fn, opts) => {
+const on = (el, ev, fn) => {
   ev = ev.split(/\s+/);
   el = el instanceof Array ? el : [el];
 
   for (let i = 0; i < ev.length; ++i) {
-    el.forEach(elem => elem && elem.addEventListener(ev[i], fn, opts));
+    el.forEach(elem => elem.addEventListener(ev[i], fn));
   }
 };
 
-const off = (el, ev, fn, opts) => {
+const off = (el, ev, fn) => {
   ev = ev.split(/\s+/);
   el = el instanceof Array ? el : [el];
 
   for (let i = 0; i < ev.length; ++i) {
-    el.forEach(elem => elem && elem.removeEventListener(ev[i], fn, opts));
+    el.forEach(elem => elem.removeEventListener(ev[i], fn));
   }
 };
 
@@ -164,22 +160,6 @@ export const isCommentNode = el => el && el.nodeType === 8;
  * @return {Boolean}
  */
 export const isTaggableNode = el => el && !isTextNode(el) && !isCommentNode(el);
-
-export const find = (arr, test) => {
-  let result = null;
-  arr.some((el, i) => (test(el, i, arr) ? ((result = el), 1) : 0));
-  return result;
-};
-
-export const escape = (str = '') => {
-  return `${str}`
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-    .replace(/`/g, '&#96;');
-};
 
 /**
  * Ensure to fetch the model from the input argument

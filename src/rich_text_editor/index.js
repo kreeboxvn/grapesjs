@@ -27,7 +27,7 @@
  */
 
 import RichTextEditor from './model/RichTextEditor';
-import { on, hasWin } from 'utils/mixins';
+import { on, off } from 'utils/mixins';
 import defaults from './config/config';
 
 export default () => {
@@ -75,7 +75,6 @@ export default () => {
 
       this.pfx = config.stylePrefix;
       actions = config.actions || [];
-      if (!hasWin()) return this;
       toolbar = document.createElement('div');
       toolbar.className = `${ppfx}rte-toolbar ${ppfx}one-bg`;
       globalRte = this.initRte(document.createElement('div'));
@@ -290,27 +289,25 @@ export default () => {
      * @param {Object} rte The instance of already defined RTE
      * @private
      * */
-    async enable(view, rte) {
+    enable(view, rte) {
       lastEl = view.el;
-      const { customRte } = this;
       const canvas = config.em.get('Canvas');
       const em = config.em;
       const el = view.getChildrenContainer();
+      const customRte = this.customRte;
       lastElPos = canvas.getElementPos(lastEl);
 
       toolbar.style.display = '';
-      const rteInst = await (customRte
-        ? customRte.enable(el, rte)
-        : this.initRte(el).enable());
+      rte = customRte ? customRte.enable(el, rte) : this.initRte(el).enable();
 
       if (em) {
         setTimeout(this.updatePosition.bind(this), 0);
         em.off(eventsUp, this.updatePosition, this);
         em.on(eventsUp, this.updatePosition, this);
-        em.trigger('rte:enable', view, rteInst);
+        em.trigger('rte:enable', view, rte);
       }
 
-      return rteInst;
+      return rte;
     },
 
     /**

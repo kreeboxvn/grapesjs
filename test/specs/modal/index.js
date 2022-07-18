@@ -1,4 +1,5 @@
 import Modal from 'modal_dialog';
+import ModalView from './view/ModalView';
 
 describe('Modal dialog', () => {
   describe('Main', () => {

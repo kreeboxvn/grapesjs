@@ -1,5 +1,4 @@
 import Component from './ComponentText';
-import { toLowerCase } from 'utils/mixins';
 
 export default Component.extend(
   {
@@ -24,8 +23,9 @@ export default Component.extend(
   {
     isComponent(el) {
       let result;
+      let avoidEdit;
 
-      if (toLowerCase(el.tagName) === 'a') {
+      if (el.tagName == 'A') {
         result = {
           type: 'link',
           editable: 0

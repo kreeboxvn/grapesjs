@@ -1,14 +1,10 @@
 import Component from './Component';
-import { toLowerCase } from 'utils/mixins';
-
-const type = 'script';
 
 export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,
-      type,
-      tagName: type,
+      type: 'script',
       droppable: false,
       draggable: false,
       layerable: false
@@ -16,8 +12,8 @@ export default Component.extend(
   },
   {
     isComponent(el) {
-      if (toLowerCase(el.tagName) == type) {
-        const result = { type };
+      if (el.tagName == 'SCRIPT') {
+        var result = { type: 'script' };
 
         if (el.src) {
           result.src = el.src;

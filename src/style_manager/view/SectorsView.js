@@ -101,20 +101,18 @@ export default Backbone.View.extend({
     };
 
     const sm = em.get('StyleManager');
-    const target = sm.getModelToStyle(model);
+    model = sm.getModelToStyle(model);
 
     if (state) {
-      appendStateRule(target.getStyle());
+      appendStateRule(model.getStyle());
       this.toggleStateCls(targets, 1);
     }
 
-    pt.model = target;
-    pt.parentRules = sm.getParentRules(target, state);
+    pt.model = model;
     if (componentFirst) {
       pt.targets = targets.map(t => sm.getModelToStyle(t)).filter(Boolean);
     }
     pt.trigger('update');
-    em.trigger('styleManager:update');
   },
 
   /**

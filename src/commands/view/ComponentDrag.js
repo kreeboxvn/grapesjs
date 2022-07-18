@@ -269,41 +269,34 @@ export default {
       x = this.getTranslate(transform);
       y = this.getTranslate(transform, 'y');
     } else {
-      x = parseFloat(left || 0);
-      y = parseFloat(top || 0);
+      x = parseFloat(left);
+      y = parseFloat(top);
     }
 
     return { x, y };
   },
 
   setPosition({ x, y, end, position, width, height }) {
-    const { target, isTran, em } = this;
+    const { target, isTran } = this;
     const unit = 'px';
     const en = !end ? 1 : ''; // this will trigger the final change
     const left = `${x}${unit}`;
     const top = `${y}${unit}`;
-    let styleUp = {};
 
     if (isTran) {
       let transform = target.getStyle()['transform'] || '';
       transform = this.setTranslate(transform, 'x', left);
       transform = this.setTranslate(transform, 'y', top);
-      styleUp = { transform, en };
-      target.addStyle(styleUp, { avoidStore: !end });
-    } else {
-      const adds = { position, width, height };
-      const style = { left, top, en };
-      keys(adds).forEach(add => {
-        const prop = adds[add];
-        if (prop) style[add] = prop;
-      });
-      styleUp = style;
-      target.addStyle(styleUp, { avoidStore: !end });
+      return target.addStyle({ transform, en }, { avoidStore: !end });
     }
 
-    // Update StyleManager properties
-    em.getSelected() &&
-      keys(styleUp).forEach(i => em.trigger(`update:component:style:${i}`));
+    const adds = { position, width, height };
+    const style = { left, top, en };
+    keys(adds).forEach(add => {
+      const prop = adds[add];
+      if (prop) style[add] = prop;
+    });
+    target.addStyle(style, { avoidStore: !end });
   },
 
   _getDragData() {

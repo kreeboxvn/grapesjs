@@ -1,7 +1,6 @@
-import { Model } from 'backbone';
-import { hasWin } from 'utils/mixins';
+import Backbone from 'backbone';
 
-export default Model.extend({
+export default Backbone.Model.extend({
   defaults: {
     checkLocal: true
   },
@@ -9,28 +8,31 @@ export default Model.extend({
   /**
    * @private
    */
-  store(data, clb = () => {}) {
-    if (this.hasLocal()) {
-      for (let key in data) localStorage.setItem(key, data[key]);
-    }
+  store(data, clb) {
+    this.checkStorageEnvironment();
 
-    clb && clb();
+    for (var key in data) localStorage.setItem(key, data[key]);
+
+    if (typeof clb == 'function') {
+      clb();
+    }
   },
 
   /**
    * @private
    */
-  load(keys, clb = () => {}) {
-    const result = {};
+  load(keys, clb) {
+    this.checkStorageEnvironment();
+    var result = {};
 
-    if (this.hasLocal()) {
-      for (let i = 0, len = keys.length; i < len; i++) {
-        const value = localStorage.getItem(keys[i]);
-        if (value) result[keys[i]] = value;
-      }
+    for (var i = 0, len = keys.length; i < len; i++) {
+      var value = localStorage.getItem(keys[i]);
+      if (value) result[keys[i]] = value;
     }
 
-    clb && clb(result);
+    if (typeof clb == 'function') {
+      clb(result);
+    }
 
     return result;
   },
@@ -39,9 +41,9 @@ export default Model.extend({
    * @private
    */
   remove(keys) {
-    if (!this.hasLocal()) return;
+    this.checkStorageEnvironment();
 
-    for (let i = 0, len = keys.length; i < len; i++)
+    for (var i = 0, len = keys.length; i < len; i++)
       localStorage.removeItem(keys[i]);
   },
 
@@ -49,14 +51,8 @@ export default Model.extend({
    * Check storage environment
    * @private
    * */
-  hasLocal() {
-    const win = hasWin();
-
-    if (this.get('checkLocal') && (!win || !localStorage)) {
-      win && console.warn("Your browser doesn't support localStorage");
-      return false;
-    }
-
-    return true;
+  checkStorageEnvironment() {
+    if (this.get('checkLocal') && !localStorage)
+      console.warn("Your browser doesn't support localStorage");
   }
 });

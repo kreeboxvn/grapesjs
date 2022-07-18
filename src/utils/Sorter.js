@@ -75,7 +75,6 @@ export default Backbone.View.extend({
   },
 
   getScale() {
-    const scale = this.scale;
     return result(this, scale) || 1;
   },
 
@@ -1051,7 +1050,7 @@ export default Backbone.View.extend({
       }
     }
 
-    if (this.moved && target) {
+    if (this.moved) {
       const toMove = this.toMove;
       const toMoveArr = isArray(toMove) ? toMove : toMove ? [toMove] : [src];
       toMoveArr.forEach(model => {

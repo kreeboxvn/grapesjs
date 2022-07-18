@@ -63,7 +63,7 @@ export default Backbone.View.extend({
     const sameFrameView = frameView.model && model.getView(frameView.model);
     const dt =
       opts.componentTypes || (em && em.get('DomComponents').getTypes());
-    const type = model.get('type') || 'default';
+    const type = model.get('type');
     let viewObject = this.compView;
 
     for (let it = 0; it < dt.length; it++) {

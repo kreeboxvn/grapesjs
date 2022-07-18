@@ -1,57 +1,4 @@
-import { each } from 'underscore';
-
-const htmlType = 'text/html';
-const defaultType = htmlType; // 'application/xml';
-
-export default (str, config = {}) => {
-  const parser = new DOMParser();
-  const mimeType = config.htmlType || defaultType;
-  const toHTML = mimeType === htmlType;
-  const strF = toHTML ? str : `<div>${str}</div>`;
-  const doc = parser.parseFromString(strF, mimeType);
-  let res;
-
-  if (toHTML) {
-    // Replicate the old parser in order to avoid breaking changes
-    const { head, body } = doc;
-    // Move all scripts at the bottom of the page
-    const scripts = head.querySelectorAll('script');
-    each(scripts, node => body.appendChild(node));
-    // Move inside body all head children
-    const hEls = [];
-    each(head.children, n => hEls.push(n));
-    each(hEls, (node, i) => body.insertBefore(node, body.children[i]));
-    res = body;
-  } else {
-    res = doc.firstChild;
-  }
-
-  return res;
-};
-
-/**
- * POC, custom html parser specs
- * Parse an HTML string to an array of nodes
- * example
- * parse(`<div class="mycls" data-test>Hello</div><span>World <b>example</b></span>`)
- * // result
- * [
- *  {
- *      tagName: 'div',
- *      attributes: { class: 'mycls', 'data-test': '' },
- *      childNodes: ['Hello'],
- *  },{
- *      tagName: 'span',
- *      childNodes: [
- *          'World ',
- *          {
- *              tagName: 'b',
- *              childNodes: ['example'],
- *          }
- *       ],
- *  }
- * ]
- *
+// PoC
 
 export const parseNodes = nodes => {
   const result = [];
@@ -97,7 +44,29 @@ export const parseNode = el => {
   };
 };
 
-export default (str, config = {}) => {
+/**
+ * Parse an HTML string to an array of nodes
+ * @example
+ * parse(`<div class="mycls" data-test>Hello</div><span>World <b>example</b></span>`)
+ * // result
+ * [
+ *  {
+ *      tagName: 'div',
+ *      attributes: { class: 'mycls', 'data-test': '' },
+ *      childNodes: ['Hello'],
+ *  },{
+ *      tagName: 'span',
+ *      childNodes: [
+ *          'World ',
+ *          {
+ *              tagName: 'b',
+ *              childNodes: ['example'],
+ *          }
+ *       ],
+ *  }
+ * ]
+ */
+export default (str, config) => {
   const result = [];
   const el = document.createElement('div');
   el.innerHTML = str;
@@ -110,4 +79,3 @@ export default (str, config = {}) => {
 
   return result;
 };
- */

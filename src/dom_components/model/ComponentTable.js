@@ -1,14 +1,11 @@
 import Component from './Component';
-import { toLowerCase } from 'utils/mixins';
-
-const type = 'table';
 
 export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,
-      type,
-      tagName: type,
+      type: 'table',
+      tagName: 'table',
       droppable: ['tbody', 'thead', 'tfoot']
     },
 
@@ -19,6 +16,14 @@ export default Component.extend(
     }
   },
   {
-    isComponent: el => toLowerCase(el.tagName) === type
+    isComponent(el) {
+      let result = '';
+
+      if (el.tagName == 'TABLE') {
+        result = { type: 'table' };
+      }
+
+      return result;
+    }
   }
 );

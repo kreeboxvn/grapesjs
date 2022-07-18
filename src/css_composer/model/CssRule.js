@@ -1,48 +1,46 @@
 import { map } from 'underscore';
-import { Model } from 'backbone';
+import Backbone from 'backbone';
 import Styleable from 'domain_abstract/model/Styleable';
 import { isEmpty, forEach, isString } from 'underscore';
 import Selectors from 'selector_manager/model/Selectors';
-import { isEmptyObj, hasWin } from 'utils/mixins';
+import { isEmptyObj } from 'utils/mixins';
 
-const { CSS } = hasWin() ? window : {};
+const { CSS } = window;
 
-export default class CssRule extends Model.extend(Styleable) {
-  defaults() {
-    return {
-      // Css selectors
-      selectors: [],
+export default Backbone.Model.extend(Styleable).extend({
+  defaults: {
+    // Css selectors
+    selectors: [],
 
-      // Additional string css selectors
-      selectorsAdd: '',
+    // Additional string css selectors
+    selectorsAdd: '',
 
-      // Css properties style
-      style: {},
+    // Css properties style
+    style: {},
 
-      // On which device width this rule should be rendered, eg. @media (max-width: 1000px)
-      mediaText: '',
+    // On which device width this rule should be rendered, eg. @media (max-width: 1000px)
+    mediaText: '',
 
-      // State of the rule, eg: hover | pressed | focused
-      state: '',
+    // State of the rule, eg: hover | pressed | focused
+    state: '',
 
-      // Indicates if the rule is stylable
-      stylable: true,
+    // Indicates if the rule is stylable
+    stylable: true,
 
-      // Type of at-rule, eg. 'media', 'font-face', etc.
-      atRuleType: '',
+    // Type of at-rule, eg. 'media', 'font-face', etc.
+    atRuleType: '',
 
-      // This particolar property is used only on at-rules, like 'page' or
-      // 'font-face', where the block containes only style declarations
-      singleAtRule: 0,
+    // This particolar property is used only on at-rules, like 'page' or
+    // 'font-face', where the block containes only style declarations
+    singleAtRule: 0,
 
-      // If true, sets '!important' on all properties
-      // You can use an array to specify properties to set important
-      // Used in view
-      important: 0,
+    // If true, sets '!important' on all properties
+    // You can use an array to specify properties to set important
+    // Used in view
+    important: 0,
 
-      _undo: true
-    };
-  }
+    _undo: true
+  },
 
   initialize(c, opt = {}) {
     this.config = c || {};
@@ -50,20 +48,20 @@ export default class CssRule extends Model.extend(Styleable) {
     this.em = opt.em;
     this.ensureSelectors();
     this.on('change', this.__onChange);
-  }
+  },
 
   __onChange(m, opts) {
     const { em } = this;
     const changed = this.changedAttributes();
     !isEmptyObj(changed) && em && em.changesUp(opts);
-  }
+  },
 
   clone() {
     const opts = { ...this.opt };
     const attr = { ...this.attributes };
     attr.selectors = this.get('selectors').map(s => s.clone());
     return new this.constructor(attr, opts);
-  }
+  },
 
   ensureSelectors(m, c, opts) {
     const { em } = this;
@@ -85,17 +83,11 @@ export default class CssRule extends Model.extend(Styleable) {
 
     this.set('selectors', sels, opts);
     this.listenTo(...toListen);
-  }
+  },
 
   /**
-   * Return the at-rule statement when exists, eg. '@media (...)', '@keyframes'
-   * @returns {String}
-   * @example
-   * const cssRule = editor.Css.setRule('.class1', { color: 'red' }, {
-   *  atRuleType: 'media',
-   *  atRuleParams: '(min-width: 500px)'
-   * });
-   * cssRule.getAtRule(); // "@media (min-width: 500px)"
+   * Returns an at-rule statement if possible, eg. '@media (...)', '@keyframes'
+   * @return {string}
    */
   getAtRule() {
     const type = this.get('atRuleType');
@@ -104,17 +96,11 @@ export default class CssRule extends Model.extend(Styleable) {
     const typeStr = type ? `@${type}` : condition ? '@media' : '';
 
     return typeStr + (condition && typeStr ? ` ${condition}` : '');
-  }
+  },
 
   /**
-   * Return selectors of the rule as a string
-   * @param {Object} [opts] Options
-   * @param {Boolean} [opts.skipState] Skip state from the result
-   * @returns {String}
-   * @example
-   * const cssRule = editor.Css.setRule('.class1:hover', { color: 'red' });
-   * cssRule.selectorsToString(); // ".class1:hover"
-   * cssRule.selectorsToString({ skipState: true }); // ".class1"
+   * Return selectors fo the rule as a string
+   * @return {string}
    */
   selectorsToString(opts = {}) {
     const result = [];
@@ -132,18 +118,12 @@ export default class CssRule extends Model.extend(Styleable) {
     selectors && result.push(`${selectors}${stateStr}`);
     addSelector && !opts.skipAdd && result.push(addSelector);
     return result.join(', ');
-  }
+  },
 
   /**
-   * Get declaration block (without the at-rule statement)
-   * @param {Object} [opts={}] Options (same as in `selectorsToString`)
-   * @returns {String}
-   * @example
-   * const cssRule = editor.Css.setRule('.class1', { color: 'red' }, {
-   *  atRuleType: 'media',
-   *  atRuleParams: '(min-width: 500px)'
-   * });
-   * cssRule.getDeclaration() // ".class1{color:red;}"
+   * Get declaration block
+   * @param {Object} [opts={}] Options
+   * @return {string}
    */
   getDeclaration(opts = {}) {
     let result = '';
@@ -156,18 +136,12 @@ export default class CssRule extends Model.extend(Styleable) {
     }
 
     return result;
-  }
+  },
 
   /**
-   * Return the CSS string of the rule
-   * @param {Object} [opts={}] Options (same as in `getDeclaration`)
-   * @return {String} CSS string
-   * @example
-   * const cssRule = editor.Css.setRule('.class1', { color: 'red' }, {
-   *  atRuleType: 'media',
-   *  atRuleParams: '(min-width: 500px)'
-   * });
-   * cssRule.toCSS() // "@media (min-width: 500px){.class1{color:red;}}"
+   * Returns CSS string of the rule
+   * @param {Object} [opts={}] Options
+   * @return {string}
    */
   toCSS(opts = {}) {
     let result = '';
@@ -180,13 +154,13 @@ export default class CssRule extends Model.extend(Styleable) {
     }
 
     return result;
-  }
+  },
 
   toJSON(...args) {
-    const obj = Model.prototype.toJSON.apply(this, args);
+    const obj = Backbone.Model.prototype.toJSON.apply(this, args);
 
     if (this.em.getConfig('avoidDefaults')) {
-      const defaults = this.defaults();
+      const defaults = this.defaults;
 
       forEach(defaults, (value, key) => {
         if (obj[key] === value) {
@@ -199,7 +173,7 @@ export default class CssRule extends Model.extend(Styleable) {
     }
 
     return obj;
-  }
+  },
 
   /**
    * Compare the actual model with parameters
@@ -242,4 +216,4 @@ export default class CssRule extends Model.extend(Styleable) {
 
     return true;
   }
-}
+});

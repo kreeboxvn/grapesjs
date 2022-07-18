@@ -23,7 +23,6 @@ describe('ComponentView', () => {
     view = new ComponentView({
       model
     });
-    em.get('StyleManager').render(); // Enable to listen em.setState
     document.body.innerHTML = '<div id="fixtures"></div>';
     fixtures = document.body.querySelector('#fixtures');
     fixtures.appendChild(view.render().el);

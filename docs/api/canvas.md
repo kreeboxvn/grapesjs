@@ -18,63 +18,53 @@ Once the editor is instantiated you can use its API. Before using these methods 
 const canvas = editor.Canvas;
 ```
 
-*   [getConfig][2]
-*   [getElement][3]
-*   [getFrameEl][4]
-*   [getWindow][5]
-*   [getDocument][6]
-*   [getBody][7]
-*   [setCustomBadgeLabel][8]
-*   [hasFocus][9]
-*   [scrollTo][10]
-*   [setZoom][11]
-*   [getZoom][12]
-*   [getCoords][13]
-*   [setCoords][14]
-
-[Component]: component.html
+-   [getConfig][2]
+-   [getElement][3]
+-   [getFrameEl][4]
+-   [getWindow][5]
+-   [getDocument][6]
+-   [getBody][7]
+-   [setCustomBadgeLabel][8]
+-   [hasFocus][9]
+-   [scrollTo][10]
+-   [setZoom][11]
+-   [getZoom][12]
 
 ## getConfig
 
 Get the configuration object
 
-### Examples
-
-```javascript
-console.log(canvas.getConfig())
-```
-
-Returns **[Object][15]** Configuration object
+Returns **[Object][13]** 
 
 ## getElement
 
 Get the canvas element
 
-Returns **[HTMLElement][16]** 
+Returns **[HTMLElement][14]** 
 
 ## getFrameEl
 
-Get the main frame element of the canvas
+Get the iframe element of the canvas
 
-Returns **[HTMLIFrameElement][17]** 
+Returns **[HTMLIFrameElement][15]** 
 
 ## getWindow
 
-Get the main frame window instance
+Get the window instance of the iframe element
 
-Returns **[Window][18]** 
+Returns **[Window][16]** 
 
 ## getDocument
 
-Get the main frame document element
+Get the document of the iframe element
 
 Returns **HTMLDocument** 
 
 ## getBody
 
-Get the main frame body element
+Get the body of the iframe element
 
-Returns **[HTMLBodyElement][19]** 
+Returns **[HTMLBodyElement][17]** 
 
 ## setCustomBadgeLabel
 
@@ -82,7 +72,7 @@ Set custom badge naming strategy
 
 ### Parameters
 
-*   `f` **[Function][20]** 
+-   `f` **[Function][18]** 
 
 ### Examples
 
@@ -96,13 +86,13 @@ canvas.setCustomBadgeLabel(function(component){
 
 Get canvas rectangular data
 
-Returns **[Object][15]** 
+Returns **[Object][13]** 
 
 ## hasFocus
 
 Check if the canvas is focused
 
-Returns **[Boolean][21]** 
+Returns **[Boolean][19]** 
 
 ## scrollTo
 
@@ -113,10 +103,9 @@ passed to it. For instance, you can scroll smoothly by using
 
 ### Parameters
 
-*   `el` **([HTMLElement][16] | [Component])** 
-*   `opts` **[Object][15]** Options, same as options for `scrollIntoView` (optional, default `{}`)
-
-    *   `opts.force` **[Boolean][21]** Force the scroll, even if the element is already visible (optional, default `false`)
+-   `el` **([HTMLElement][14] | Component)** 
+-   `opts` **[Object][13]** Options, same as options for `scrollIntoView` (optional, default `{}`)
+    -   `opts.force` **[Boolean][19]** Force the scroll, even if the element is already visible (optional, default `false`)
 
 ### Examples
 
@@ -130,63 +119,19 @@ canvas.scrollTo(selected, { force: true });
 
 ## setZoom
 
-Set canvas zoom value
+Set zoom value
 
 ### Parameters
 
-*   `value` **[Number][22]** The zoom value, from 0 to 100
-
-### Examples
-
-```javascript
-canvas.setZoom(50); // set zoom to 50%
-```
+-   `value` **[Number][20]** The zoom value, from 0 to 100
 
 Returns **this** 
 
 ## getZoom
 
-Get canvas zoom value
+Get zoom value
 
-### Examples
-
-```javascript
-canvas.setZoom(50); // set zoom to 50%
-const zoom = canvas.getZoom(); // 50
-```
-
-Returns **[Number][22]** 
-
-## setCoords
-
-Set canvas position coordinates
-
-### Parameters
-
-*   `x` **[Number][22]** Horizontal position
-*   `y` **[Number][22]** Vertical position
-
-### Examples
-
-```javascript
-canvas.setCoords(100, 100);
-```
-
-Returns **this** 
-
-## getCoords
-
-Get canvas position coordinates
-
-### Examples
-
-```javascript
-canvas.setCoords(100, 100);
-const coords = canvas.getCoords();
-// { x: 100, y: 100 }
-```
-
-Returns **[Object][15]** Object containing coordinates
+Returns **[Number][20]** 
 
 ## addFrame
 
@@ -194,27 +139,27 @@ Add new frame to the canvas
 
 ### Parameters
 
-*   `props` **[Object][15]** Frame properties (optional, default `{}`)
-*   `opts`   (optional, default `{}`)
+-   `props` **[Object][13]** Frame properties (optional, default `{}`)
+-   `opts`   (optional, default `{}`)
 
 ### Examples
 
 ```javascript
-canvas.addFrame({
-  name: 'Mobile home page',
-  x: 100, // Position in canvas
-  y: 100,
-  width: 500, // Frame dimensions
-  height: 600,
-  // device: 'DEVICE-ID',
-  components: [
-    '<h1 class="testh">Title frame</h1>',
-    '<p class="testp">Paragraph frame</p>',
-  ],
-  styles: `
-    .testh { color: red; }
-    .testp { color: blue; }
-  `,
+editor.Canvas.addFrame({
+name: 'Mobile home page',
+x: 100, // Position in canvas
+y: 100,
+width: 500, // Frame dimensions
+height: 600,
+// device: 'DEVICE-ID',
+components: [
+'<h1 class="testh">Title frame</h1>',
+'<p class="testp">Paragraph frame</p>',
+],
+styles: `
+.testh { color: red; }
+.testp { color: blue; }
+`,
 });
 ```
 
@@ -244,22 +189,18 @@ Returns **Frame**
 
 [12]: #getzoom
 
-[13]: #getcoords
+[13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[14]: #setcoords
+[14]: https://developer.mozilla.org/docs/Web/HTML/Element
 
-[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[15]: https://developer.mozilla.org/docs/Web/API/HTMLIFrameElement
 
-[16]: https://developer.mozilla.org/docs/Web/HTML/Element
+[16]: https://developer.mozilla.org/docs/Web/API/Window
 
-[17]: https://developer.mozilla.org/docs/Web/API/HTMLIFrameElement
+[17]: https://developer.mozilla.org/docs/Web/HTML/Element/body
 
-[18]: https://developer.mozilla.org/docs/Web/API/Window
+[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[19]: https://developer.mozilla.org/docs/Web/HTML/Element/body
+[19]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
-
-[21]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
-
-[22]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[20]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number

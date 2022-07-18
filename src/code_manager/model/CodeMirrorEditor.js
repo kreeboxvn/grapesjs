@@ -1,15 +1,9 @@
 import { bindAll } from 'underscore';
 import Backbone from 'backbone';
-import { hasWin } from 'utils/mixins';
-
-let CodeMirror;
-
-if (hasWin()) {
-  CodeMirror = require('codemirror/lib/codemirror');
-  require('codemirror/mode/htmlmixed/htmlmixed');
-  require('codemirror/mode/css/css');
-  require('codemirror-formatting');
-}
+import CodeMirror from 'codemirror/lib/codemirror';
+import 'codemirror/mode/htmlmixed/htmlmixed';
+import 'codemirror/mode/css/css';
+import 'codemirror-formatting';
 
 export default Backbone.Model.extend({
   CodeMirror,

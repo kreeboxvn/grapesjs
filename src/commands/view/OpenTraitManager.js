@@ -13,6 +13,7 @@ export default {
     var panelC;
 
     if (!this.$cn) {
+      var tmView = tm.getTraitsViewer();
       var confTm = tm.getConfig();
       this.$cn = $('<div></div>');
       this.$cn2 = $('<div></div>');
@@ -26,7 +27,7 @@ export default {
       this.$cn2.append(
         `<div class="${pfx}traits-label">${em.t('traitManager.label')}</div>`
       );
-      this.$cn2.append(tm.render());
+      this.$cn2.append(tmView.render().el);
       var panels = editor.Panels;
 
       if (!panels.getPanel('views-container'))

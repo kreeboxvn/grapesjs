@@ -1,10 +1,9 @@
-import { each, isString, isFunction } from 'underscore';
-import BrowserParserHtml from './BrowserParserHtml';
+import { each, isString } from 'underscore';
 
 export default config => {
-  let c = config;
-  const modelAttrStart = 'data-gjs-';
-  const event = 'parse:html';
+  var TEXT_NODE = 'span';
+  var c = config;
+  var modelAttrStart = 'data-gjs-';
 
   return {
     compTypes: '',
@@ -102,7 +101,7 @@ export default config => {
      * @param  {HTMLElement} el DOM element to traverse
      * @return {Array<Object>}
      */
-    parseNode(el, opts = {}) {
+    parseNode(el) {
       const result = [];
       const nodes = el.childNodes;
 
@@ -129,7 +128,7 @@ export default config => {
             // the first with a valid result will be that component
             for (let it = 0; it < ct.length; it++) {
               const compType = ct[it];
-              obj = compType.model.isComponent(node, opts);
+              obj = compType.model.isComponent(node);
 
               if (obj) {
                 if (typeof obj !== 'object') {
@@ -208,10 +207,7 @@ export default config => {
               content: firstChild.nodeValue
             };
           } else {
-            model.components = this.parseNode(node, {
-              inSvg: model.type === 'svg',
-              ...opts
-            });
+            model.components = this.parseNode(node);
           }
         }
 
@@ -229,11 +225,6 @@ export default config => {
               continue;
             }
           }
-        }
-
-        // Check for custom void elements (valid in XML)
-        if (!nodeChild && `${node.outerHTML}`.slice(-2) === '/>') {
-          model.void = true;
         }
 
         // If all children are texts and there is some textnode the parent should
@@ -282,19 +273,17 @@ export default config => {
      * @param  {ParserCss} parserCss In case there is style tags inside HTML
      * @return {Object}
      */
-    parse(str, parserCss, opts = {}) {
+    parse(str, parserCss) {
       const { em } = c;
-      const conf = (em && em.get('Config')) || {};
-      const res = { html: null, css: null };
-      const cf = { ...config, ...opts };
-      const el = isFunction(cf.parserHtml)
-        ? cf.parserHtml(str, cf)
-        : BrowserParserHtml(str, cf);
+      const config = (em && em.get('Config')) || {};
+      const res = { html: '', css: '' };
+      const el = document.createElement('div');
+      el.innerHTML = str;
       const scripts = el.querySelectorAll('script');
       let i = scripts.length;
 
       // Remove all scripts
-      if (!conf.allowScripts) {
+      if (!config.allowScripts) {
         while (i--) scripts[i].parentNode.removeChild(scripts[i]);
       }
 
@@ -312,13 +301,12 @@ export default config => {
         if (styleStr) res.css = parserCss.parse(styleStr);
       }
 
-      em && em.trigger(`${event}:root`, { input: str, root: el });
       const result = this.parseNode(el);
       // I have to keep it otherwise it breaks the DomComponents.addComponent (returns always array)
       const resHtml =
         result.length === 1 && !c.returnArray ? result[0] : result;
       res.html = resHtml;
-      em && em.trigger(event, { input: str, output: res });
+      em && em.trigger('parse:html', { input: str, output: res });
 
       return res;
     }

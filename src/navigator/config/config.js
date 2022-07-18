@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   stylePrefix: '',
 
@@ -10,7 +9,7 @@ export default {
   sortable: 1,
 
   // Enable/Disable globally the possibility to hide layers
-  hidable: 0,
+  hidable: 1,
 
   // Hide textnodes
   hideTextnode: 1,
@@ -59,17 +58,5 @@ export default {
    *  }
    * }
    */
-  onRender: () => {},
-
-  /**
-   * Extend Layer view object (view/ItemView.js)
-   * @example
-   * extend: {
-   *   setName(name) {
-   *     // this.model is the component of the layer
-   *     this.model.set('another-prop-for-name', name);
-   *   },
-   * },
-   */
-  extend: {}
+  onRender: () => {}
 };

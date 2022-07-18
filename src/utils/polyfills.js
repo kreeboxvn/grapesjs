@@ -2,7 +2,6 @@
  * File made for IE/Edge support
  * https://github.com/artf/grapesjs/issues/214
  */
-import { hasWin } from './mixins';
 
 export default () => {
   /**
@@ -28,7 +27,7 @@ export default () => {
     return !!match;
   };
 
-  if (hasWin() && isIE()) {
+  if (isIE()) {
     const originalCreateHTMLDocument =
       DOMImplementation.prototype.createHTMLDocument;
     DOMImplementation.prototype.createHTMLDocument = title => {

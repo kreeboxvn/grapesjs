@@ -1,4 +1,5 @@
 import Editor from 'editor/index';
+import Keymaps from 'keymaps';
 
 describe('Keymaps', () => {
   describe('Main', () => {

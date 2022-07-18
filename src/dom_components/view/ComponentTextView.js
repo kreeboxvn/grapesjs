@@ -28,7 +28,7 @@ export default ComponentView.extend({
    * Enable element content editing
    * @private
    * */
-  async onActive(e) {
+  onActive(e) {
     const { rte, em } = this;
 
     // We place this before stopPropagation in case of nested
@@ -45,7 +45,7 @@ export default ComponentView.extend({
 
     if (rte) {
       try {
-        this.activeRte = await rte.enable(this, this.activeRte);
+        this.activeRte = rte.enable(this, this.activeRte);
       } catch (err) {
         em.logError(err);
       }
@@ -62,20 +62,18 @@ export default ComponentView.extend({
    * Disable element content editing
    * @private
    * */
-  async disableEditing() {
+  disableEditing() {
     const { model, rte, activeRte, em } = this;
-    // There are rare cases when disableEditing is called when the view is already removed
-    // so, we have to check for the model, this will avoid breaking stuff.
-    const editable = model && model.get('editable');
+    const editable = model.get('editable');
 
-    if (rte) {
+    if (rte && editable) {
       try {
-        await rte.disable(this, activeRte);
+        rte.disable(this, activeRte);
       } catch (err) {
         em.logError(err);
       }
 
-      editable && this.syncContent();
+      this.syncContent();
     }
 
     this.toggleEvents();
@@ -166,10 +164,10 @@ export default ComponentView.extend({
    * @param {Boolean} enable
    */
   toggleEvents(enable) {
-    const { em, model, $el } = this;
+    const { em, model } = this;
     const mixins = { on, off };
     const method = enable ? 'on' : 'off';
-    em.setEditing(enable ? this : 0);
+    em.setEditing(enable);
     this.rteEnabled = !!enable;
 
     // The ownerDocument is from the frame
@@ -177,14 +175,11 @@ export default ComponentView.extend({
     mixins.off(elDocs, 'mousedown', this.disableEditing);
     mixins[method](elDocs, 'mousedown', this.disableEditing);
     em[method]('toolbar:run:before', this.disableEditing);
-    if (model) {
-      model[method]('removed', this.disableEditing);
-      model.trigger(`rte:${enable ? 'enable' : 'disable'}`);
-    }
+    model[method]('removed', this.disableEditing);
 
     // Avoid closing edit mode on component click
-    $el && $el.off('mousedown', this.disablePropagation);
-    $el && $el[method]('mousedown', this.disablePropagation);
+    this.$el.off('mousedown', this.disablePropagation);
+    this.$el[method]('mousedown', this.disablePropagation);
 
     // Fixes #2210 but use this also as a replacement
     // of this fix: bd7b804f3b46eb45b4398304b2345ce870f232d2

@@ -69,6 +69,10 @@ export default () => {
 
       model = new ModalM(c);
       model.on('change:open', (m, enb) => triggerEvent(enb, em));
+      modal = new ModalView({
+        model,
+        config: c
+      });
 
       return this;
     },
@@ -89,8 +93,7 @@ export default () => {
     open(opts = {}) {
       opts.title && this.setTitle(opts.title);
       opts.content && this.setContent(opts.content);
-      model.open();
-      modal && modal.updateAttr(opts.attributes);
+      modal.show(opts);
       return this;
     },
 
@@ -99,7 +102,7 @@ export default () => {
      * @return {this}
      */
     close() {
-      model.close();
+      modal.hide();
       return this;
     },
 
@@ -198,17 +201,11 @@ export default () => {
      * @private
      */
     render() {
-      const View = ModalView.extend(c.extend);
-      modal && modal.remove();
-      modal = new View({
-        model,
-        config: c
-      });
       return modal.render().$el;
     },
 
     destroy() {
-      modal && modal.remove();
+      modal.remove();
       [c, model, modal].forEach(i => (i = {}));
       this.em = {};
     }

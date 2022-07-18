@@ -68,8 +68,6 @@ import ComponentTextNodeView from './view/ComponentTextNodeView';
 import ComponentText from './model/ComponentText';
 import ComponentTextView from './view/ComponentTextView';
 import ComponentWrapper from './model/ComponentWrapper';
-import ComponentFrame from './model/ComponentFrame';
-import ComponentFrameView from './view/ComponentFrameView';
 
 export default () => {
   var c = {};
@@ -147,11 +145,6 @@ export default () => {
       id: 'svg',
       model: ComponentSvg,
       view: ComponentSvgView
-    },
-    {
-      id: 'iframe',
-      model: ComponentFrame,
-      view: ComponentFrameView
     },
     {
       id: 'comment',
@@ -251,10 +244,10 @@ export default () => {
 
         const selected = em.get('selected');
         em.listenTo(selected, 'add', (sel, c, opts) =>
-          this.selectAdd(selected.getComponent(sel), opts)
+          this.selectAdd(sel, opts)
         );
         em.listenTo(selected, 'remove', (sel, c, opts) =>
-          this.selectRemove(selected.getComponent(sel), opts)
+          this.selectRemove(sel, opts)
         );
       }
 
@@ -357,9 +350,11 @@ export default () => {
      * @private
      */
     getComponent() {
-      const sel = this.em.get('PageManager').getSelected();
-      const frame = sel && sel.getMainFrame();
-      return frame && frame.getComponent();
+      return this.em
+        .get('PageManager')
+        .getSelected()
+        .getMainFrame()
+        .getComponent();
     },
 
     /**
@@ -404,8 +399,7 @@ export default () => {
      * wrapperChildren.remove(comp2);
      */
     getComponents() {
-      const wrp = this.getWrapper();
-      return wrp && wrp.get('components');
+      return this.getWrapper().get('components');
     },
 
     /**
@@ -526,7 +520,7 @@ export default () => {
             ...model,
             ...getExtendedObj(extendFn, model, modelToExt),
             defaults: {
-              ...(result(modelToExt.prototype, 'defaults') || {}),
+              ...modelToExt.prototype.defaults,
               ...(result(model, 'defaults') || {})
             }
           },

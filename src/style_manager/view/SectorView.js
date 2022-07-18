@@ -1,22 +1,17 @@
-import { View } from 'backbone';
-import html from 'utils/html';
+import Backbone from 'backbone';
+import { template } from 'underscore';
 import PropertiesView from './PropertiesView';
 
-export default class SectorView extends View {
-  template({ pfx, label }) {
-    return html`
-      <div class="${pfx}title" data-sector-title>
-        <i id="${pfx}caret" class="fa"></i>
-        ${label}
-      </div>
-    `;
-  }
+export default Backbone.View.extend({
+  template: template(`
+  <div class="<%= pfx %>title" data-sector-title>
+    <i id="<%= pfx %>caret" class="fa"></i>
+    <%= label %>
+  </div>`),
 
-  events() {
-    return {
-      'click [data-sector-title]': 'toggle'
-    };
-  }
+  events: {
+    'click [data-sector-title]': 'toggle'
+  },
 
   initialize(o) {
     this.config = o.config || {};
@@ -30,7 +25,7 @@ export default class SectorView extends View {
     this.listenTo(model, 'change:open', this.updateOpen);
     this.listenTo(model, 'updateVisibility', this.updateVisibility);
     this.listenTo(model, 'destroy remove', this.remove);
-  }
+  },
 
   /**
    * If all properties are hidden this will hide the sector
@@ -43,7 +38,7 @@ export default class SectorView extends View {
       }
     });
     this.el.style.display = show ? '' : 'none';
-  }
+  },
 
   /**
    * Update visibility
@@ -51,7 +46,7 @@ export default class SectorView extends View {
   updateOpen() {
     if (this.model.get('open')) this.show();
     else this.hide();
-  }
+  },
 
   /**
    * Show the content of the sector
@@ -60,7 +55,7 @@ export default class SectorView extends View {
     this.$el.addClass(this.pfx + 'open');
     this.getPropertiesEl().style.display = '';
     this.$caret.removeClass(this.caretR).addClass(this.caretD);
-  }
+  },
 
   /**
    * Hide the content of the sector
@@ -69,20 +64,19 @@ export default class SectorView extends View {
     this.$el.removeClass(this.pfx + 'open');
     this.getPropertiesEl().style.display = 'none';
     this.$caret.removeClass(this.caretD).addClass(this.caretR);
-  }
+  },
 
   getPropertiesEl() {
     return this.$el.find(`.${this.pfx}properties`).get(0);
-  }
+  },
 
   /**
    * Toggle visibility
    * */
   toggle(e) {
-    const { model } = this;
-    const v = model.get('open') ? 0 : 1;
-    model.set('open', v);
-  }
+    var v = this.model.get('open') ? 0 : 1;
+    this.model.set('open', v);
+  },
 
   render() {
     const { pfx, model, em, $el } = this;
@@ -94,20 +88,19 @@ export default class SectorView extends View {
     $el.attr('class', `${pfx}sector ${pfx}sector__${id} no-select`);
     this.updateOpen();
     return this;
-  }
+  },
 
   renderProperties() {
-    const { model, target, propTarget, config } = this;
-    const objs = model.get('properties');
+    var objs = this.model.get('properties');
 
     if (objs) {
-      const view = new PropertiesView({
+      var view = new PropertiesView({
         collection: objs,
-        target,
-        propTarget,
-        config
+        target: this.target,
+        propTarget: this.propTarget,
+        config: this.config
       });
       this.$el.append(view.render().el);
     }
   }
-}
+});

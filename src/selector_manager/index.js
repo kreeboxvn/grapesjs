@@ -99,6 +99,11 @@ export default config => {
         c.stylePrefix = ppfx + c.stylePrefix;
       }
 
+      this.selectorTags = new ClassTagsView({
+        collection: new Selectors([], { em, config: c }),
+        config: c
+      });
+
       // Global selectors container
       selectors = new Selectors(c.selectors);
       selectors.on('add', model => em.trigger('selector:add', model));
@@ -128,7 +133,6 @@ export default config => {
     select(value, opts = {}) {
       const targets = Array.isArray(value) ? value : [value];
       const toSelect = this.em.get('StyleManager').setTarget(targets, opts);
-      const selTags = this.selectorTags;
       const res = toSelect
         .filter(i => i)
         .map(sel =>
@@ -138,7 +142,7 @@ export default config => {
             ? sel
             : sel.getSelectorsString()
         );
-      selTags && selTags.componentChanged({ targets: res });
+      this.selectorTags.componentChanged({ targets: res });
       return this;
     },
 
@@ -301,21 +305,19 @@ export default config => {
      * @private
      */
     render(selectors) {
-      const { em, selectorTags } = this;
-      selectorTags && selectorTags.remove();
-      this.selectorTags = new ClassTagsView({
-        collection: new Selectors(selectors || [], { em, config: c }),
-        config: c
-      });
-
-      return this.selectorTags.render().el;
+      if (selectors) {
+        this.selectorTags = new ClassTagsView({
+          collection: new Selectors(selectors),
+          config: c
+        });
+        return this.selectorTags.render().el;
+      } else return this.selectorTags.render().el;
     },
 
     destroy() {
-      const { selectorTags } = this;
       selectors.reset();
       selectors.stopListening();
-      selectorTags && selectorTags.remove();
+      this.selectorTags.remove();
       [c, selectors].forEach(i => (i = {}));
       this.em = {};
       this.selectorTags = {};
