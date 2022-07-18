@@ -1,6 +1,5 @@
-$layerIconSize: 12px !default;
-$layerCaretSize: 18px !default;
-$layerNameSpacing: 4px !default;
+$layerIconSize: 15px !default;
+$layerNameSpacing: 5px !default;
 
 .#{$nv-prefix} {
   &selected-parent {
@@ -17,7 +16,6 @@ $layerNameSpacing: 4px !default;
     position: relative;
     background-color: rgba(0, 0, 0, 0.1);
     font-size: $fontSizeS;
-    display: grid;
 
     &-hidden {
       @include opacity(0.55);
@@ -25,9 +23,8 @@ $layerNameSpacing: 4px !default;
 
     &-count {
       position: absolute;
-      right: 24px;
-      top: 50%;
-      transform: translateY(-50%);
+      right: 27px;
+      top: 9px;
     }
 
     &-vis {
@@ -42,13 +39,13 @@ $layerNameSpacing: 4px !default;
     }
 
     &-caret {
-      font-size: $layerIconSize;
-      width: $layerIconSize;
-      height: $layerCaretSize;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 0.5rem;
+      width: 8px;
+      padding: 2px;
       cursor: pointer;
+      position: absolute;
+      left: -9px;
+      top: 6px;
       @include opacity(0.7);
 
       &:hover {
@@ -56,20 +53,10 @@ $layerNameSpacing: 4px !default;
       }
     }
 
-    &-wrapper {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-    }
-
     &-title {
-      font-weight: lighter;
-      letter-spacing: 1px;
-      text-align: left;
-      position: relative;
-      cursor: pointer;
+      @extend .#{$app-prefix}category-title;
 
-      padding: 3px 10px 3px 30px;
+      padding: 3px 10px 5px 30px;
       display: flex;
       align-items: center;
 
@@ -79,31 +66,26 @@ $layerNameSpacing: 4px !default;
         display: flex;
         width: 100%;
       }
-
-      &-c {
-        position: relative;
-      }
     }
 
     &__icon {
-      display: flex;
-      margin-left: 4px;
-      margin-right: 4px;
+      display: block;
+      width: 100%;
+      max-width: $layerIconSize;
+      max-height: $layerIconSize;
+      padding-left: 5px;
 
       svg {
-        &.#{$nv-prefix}block-svg {
-          fill: currentColor;
-        }
-        width: $layerIconSize;
+        fill: currentColor;
       }
     }
 
     &-name {
-      display: flex;
-      box-sizing: border-box;
+      padding: $layerNameSpacing 0;
+      display: inline-block;
+      box-sizing: content-box;
       overflow: hidden;
       white-space: nowrap;
-      height: auto;
       margin: 0 30px 0 $layerNameSpacing;
       @extend .#{$app-prefix}no-user-select;
 
@@ -120,48 +102,25 @@ $layerNameSpacing: 4px !default;
       display: block;
     }
 
-    &-no-chld > .#{$nv-prefix}layer-title-inn {
-      > .#{$nv-prefix}layer-caret {
-        visibility: hidden;
-        pointer-events: none;
-      }
-
-      // > .#{$nv-prefix}layer-name {
-      //   margin-left: 6px;
-      // }
+    &-no-chld > .#{$nv-prefix}layer-title-inn > .#{$nv-prefix}layer-caret {
+      display: none;
     }
 
     &-move {
-      // padding: 7px 10px 7px 5px;
-      // font-size: 12px;
-      width: calc(100% - 40px);
-      height: 100%;
+      padding: 7px 10px 7px 5px;
       position: absolute;
+      font-size: 12px;
       cursor: move;
       right: 0;
       top: 0;
-      &:active {
-        cursor: move;
-      }
-
-      &--no-edit {
-        pointer-events: none;
-        display: none;
-      }
     }
 
-    &.#{$nv-prefix}hovered > .gjs-layer-title-c > .#{$nv-prefix}layer-title {
-      background-color: #616161;
+    &.#{$nv-prefix}hovered .#{$nv-prefix}layer-title {
+      background-color: rgba(255, 255, 255, 0.015);
     }
 
-    &.#{$nv-prefix}selected > .gjs-layer-title-c > .#{$nv-prefix}layer-title {
-      background-color: #644EFF;
-    }
-
-    &.#{$nv-prefix}freezed {
-      .#{$nv-prefix}layer-title-c {
-        background: #644EFF;
-      }
+    &.#{$nv-prefix}selected .#{$nv-prefix}layer-title {
+      background-color: rgba(255, 255, 255, 0.1);
     }
   }
 }

@@ -8,8 +8,6 @@ export default ComponentView.extend({
   // Clear methods used on Nodes with attributes
   _setAttributes() {},
   renderAttributes() {},
-  updateStatus() {},
-  updateClasses() {},
   setAttribute() {},
   updateAttributes() {},
   initClasses() {},

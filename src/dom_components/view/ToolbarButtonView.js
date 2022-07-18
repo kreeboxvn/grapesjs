@@ -42,7 +42,6 @@ export default Backbone.View.extend({
 
     const calibrated = {
       ...event,
-      originalEvent: event,
       clientX: event.clientX - left,
       clientY: event.clientY - top
     };
@@ -61,8 +60,6 @@ export default Backbone.View.extend({
     }
 
     if (typeof command === 'string') {
-      debugger;
-      console.log('event', event);
       editor.runCommand(command, opts);
     }
   },

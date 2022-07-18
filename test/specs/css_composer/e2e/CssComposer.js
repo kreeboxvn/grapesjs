@@ -17,6 +17,7 @@ describe('E2E tests', () => {
   });
 
   beforeEach(done => {
+    //this.timeout(5000);
     gjs = grapesjs.init({
       stylePrefix: '',
       storageManager: { autoload: 0, type: 'none' },
@@ -27,6 +28,7 @@ describe('E2E tests', () => {
     clsm = gjs.SelectorManager;
     domc = gjs.DomComponents;
     fixture.empty().appendTo(fixtures);
+    gjs.render();
     rulesSet = [
       { selectors: [{ name: 'test1' }, { name: 'test2' }] },
       { selectors: [{ name: 'test2' }, { name: 'test3' }] },

@@ -82,11 +82,10 @@ export default Backbone.Collection.extend({
       sels.remove(rulesRemoved.map(rule => rule.getSelectors().at(0)));
 
       if (!removed.opt.temporary) {
-        // Deprecate 'style-signature'
-        // const cm = em.get('Commands');
-        // const hasSign = removed.get('style-signature');
-        // const optStyle = { target: removed };
-        // hasSign && cm.run('core:component-style-clear', optStyle);
+        const cm = em.get('Commands');
+        const hasSign = removed.get('style-signature');
+        const optStyle = { target: removed };
+        hasSign && cm.run('core:component-style-clear', optStyle);
         removed.removed();
         removed.trigger('removed');
         em.trigger('component:remove', removed);
@@ -145,9 +144,8 @@ export default Backbone.Collection.extend({
     Component.checkId(parsed.html, parsed.css, domc.componentsById, opt);
 
     if (parsed.css && cssc && !opt.temporary) {
-      const { at, ...optsToPass } = opt;
       cssc.addCollection(parsed.css, {
-        ...optsToPass,
+        ...opt,
         extend: 1
       });
     }

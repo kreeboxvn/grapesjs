@@ -27,7 +27,6 @@
  * @module I18n
  */
 import { isUndefined, isString } from 'underscore';
-import { hasWin } from 'utils/mixins';
 import config from './config';
 
 const isObj = el => !Array.isArray(el) && el !== null && typeof el === 'object';
@@ -211,7 +210,7 @@ export default () => {
     },
 
     _localLang() {
-      const nav = (hasWin() && window.navigator) || {};
+      const nav = window.navigator || {};
       const lang = nav.language || nav.userLanguage;
       return lang ? lang.split('-')[0] : 'en';
     },

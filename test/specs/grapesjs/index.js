@@ -383,7 +383,7 @@ describe('GrapesJS', () => {
 
     test('There is no active device', () => {
       var editor = obj.init(config);
-      expect(editor.getDevice()).toBe('desktop');
+      expect(editor.getDevice()).toBeFalsy();
     });
 
     test('Active another device', () => {

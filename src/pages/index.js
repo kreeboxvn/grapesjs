@@ -37,8 +37,6 @@
  * * [select](#select)
  * * [getSelected](#getselected)
  *
- * [Page]: page.html
- *
  * @module Pages
  */
 
@@ -101,13 +99,7 @@ export default () => {
       pages.on('change', (p, c) => {
         em.trigger(evPageUpdate, p, p.changedAttributes(), c);
       });
-      pages.on('reset', coll => {
-        const mainPage = !coll.length
-          ? this.add({ type: typeMain })
-          : this.getMain();
-
-        this.select(mainPage);
-      });
+      pages.on('reset', coll => coll.at(0) && this.select(coll.at(0)));
       pages.on('all', this.__onChange, this);
       model.on(chnSel, this._onPageChange);
 
@@ -149,7 +141,7 @@ export default () => {
      * Add new page
      * @param {Object} props Page properties
      * @param {Object} [opts] Options
-     * @returns {[Page]}
+     * @returns {Page}
      * @example
      * const newPage = pageManager.add({
      *  id: 'new-page-id', // without an explicit ID, a random one will be created
@@ -171,8 +163,8 @@ export default () => {
 
     /**
      * Remove page
-     * @param {String|[Page]} page Page or page id
-     * @returns {[Page]}
+     * @param {String|Page} page Page or page id
+     * @returns {Page}
      * @example
      * const removedPage = pageManager.remove('page-id');
      * // or by passing the page
@@ -193,7 +185,7 @@ export default () => {
     /**
      * Get page by id
      * @param {String} id Page id
-     * @returns {[Page]}
+     * @returns {Page}
      * @example
      * const somePage = pageManager.get('page-id');
      */
@@ -203,7 +195,7 @@ export default () => {
 
     /**
      * Get main page (the first one available)
-     * @returns {[Page]}
+     * @returns {Page}
      * @example
      * const mainPage = pageManager.getMain();
      */
@@ -214,7 +206,7 @@ export default () => {
 
     /**
      * Get all pages
-     * @returns {Array<[Page]>}
+     * @returns {Array<Page>}
      * @example
      * const arrayOfPages = pageManager.getAll();
      */
@@ -231,7 +223,7 @@ export default () => {
 
     /**
      * Change the selected page. This will switch the page rendered in canvas
-     * @param {String|[Page]} page Page or page id
+     * @param {String|Page} page Page or page id
      * @returns {this}
      * @example
      * pageManager.select('page-id');
@@ -250,7 +242,7 @@ export default () => {
 
     /**
      * Get the selected page
-     * @returns {[Page]}
+     * @returns {Page}
      * @example
      * const selectedPage = pageManager.getSelected();
      */

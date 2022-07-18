@@ -37,7 +37,7 @@ export default {
       prop = parseStyle(prop);
     }
 
-    const propOrig = this.getStyle(opts);
+    const propOrig = this.getStyle();
     const propNew = { ...prop };
     this.set('style', propNew, opts);
     const diff = shallowDiff(propOrig, propNew);
@@ -91,7 +91,7 @@ export default {
    */
   styleToString(opts = {}) {
     const result = [];
-    const style = this.getStyle(opts);
+    const style = this.getStyle();
 
     for (let prop in style) {
       const imp = opts.important;

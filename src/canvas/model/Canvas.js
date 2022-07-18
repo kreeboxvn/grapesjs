@@ -1,38 +1,36 @@
-import { Model } from 'backbone';
+import Backbone from 'backbone';
 import { evPageSelect } from 'pages';
 
-export default class Canvas extends Model {
-  defaults() {
-    return {
-      frame: '',
-      frames: '',
-      rulers: false,
-      zoom: 100,
-      x: 0,
-      y: 0,
-      // Scripts to apply on all frames
-      scripts: [],
-      // Styles to apply on all frames
-      styles: []
-    };
-  }
+export default Backbone.Model.extend({
+  defaults: {
+    frame: '',
+    frames: '',
+    rulers: false,
+    zoom: 100,
+    x: 0,
+    y: 0
+  },
 
-  initialize(props, config = {}) {
+  initialize(config = {}) {
     const { em } = config;
     this.config = config;
     this.em = em;
     this.listenTo(this, 'change:zoom', this.onZoomChange);
     this.listenTo(em, 'change:device', this.updateDevice);
     this.listenTo(em, evPageSelect, this._pageUpdated);
-  }
+  },
 
   init() {
-    const { em } = this;
+    const { em, config } = this;
+    const { styles = [], scripts = [] } = config;
     const mainPage = em.get('PageManager').getMain();
+    const frames = mainPage.getFrames();
     const frame = mainPage.getMainFrame();
-    this.set('frames', mainPage.getFrames());
-    this.updateDevice({ frame });
-  }
+    styles.forEach(style => frame.addLink(style));
+    scripts.forEach(script => frame.addScript(script));
+    this.set('frame', frame);
+    this.set('frames', frames);
+  },
 
   _pageUpdated(page, prev) {
     const { em } = this;
@@ -40,21 +38,21 @@ export default class Canvas extends Model {
     em.get('readyCanvas') && em.stopDefault(); // We have to stop before changing current frames
     prev && prev.getFrames().map(frame => frame.disable());
     this.set('frames', page.getFrames());
-  }
+  },
 
-  updateDevice(opts = {}) {
+  updateDevice() {
     const { em } = this;
     const device = em.getDeviceModel();
-    const model = opts.frame || em.getCurrentFrameModel();
+    const model = em.getCurrentFrameModel();
 
     if (model && device) {
       const { width, height } = device.attributes;
-      model.set({ width, height }, { noUndo: 1 });
+      model.set({ width, height });
     }
-  }
+  },
 
   onZoomChange() {
     const zoom = this.get('zoom');
     zoom < 1 && this.set('zoom', 1);
   }
-}
+});

@@ -1,16 +1,11 @@
 import Component from './Component';
-import { toLowerCase } from 'utils/mixins';
-
-const type = 'svg';
 
 export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,
-      type,
-      tagName: type,
-      highlightable: 0,
-      resizable: { ratioDefault: 1 }
+      resizable: { ratioDefault: 1 },
+      highlightable: 0
     },
 
     getName() {
@@ -21,6 +16,13 @@ export default Component.extend(
     }
   },
   {
-    isComponent: el => toLowerCase(el.tagName) === type
+    isComponent(el) {
+      if (SVGElement && el instanceof SVGElement) {
+        return {
+          tagName: el.tagName,
+          type: 'svg'
+        };
+      }
+    }
   }
 );

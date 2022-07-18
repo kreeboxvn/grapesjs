@@ -1,9 +1,9 @@
-import { View } from 'backbone';
+import Backbone from 'backbone';
+import ItemView from './ItemView';
 import { eventDrag } from 'dom_components/model/Component';
 
-export default View.extend({
+export default Backbone.View.extend({
   initialize(o = {}) {
-    this.items = [];
     this.opt = o;
     const config = o.config || {};
     this.level = o.level;
@@ -76,11 +76,11 @@ export default View.extend({
    * @return Object Object created
    * */
   addToCollection(model, fragmentEl, index) {
-    const { level, parentView, opt } = this;
-    const { ItemView } = opt;
-    const fragment = fragmentEl || null;
-    const item = new ItemView({
-      ItemView,
+    const { level, parentView } = this;
+    var fragment = fragmentEl || null;
+    var viewObject = ItemView;
+
+    var view = new viewObject({
       level,
       model,
       parentView,
@@ -89,7 +89,7 @@ export default View.extend({
       isCountable: this.isCountable,
       opened: this.opt.opened
     });
-    const rendered = item.render().el;
+    var rendered = view.render().el;
 
     if (fragment) {
       fragment.appendChild(rendered);
@@ -112,13 +112,8 @@ export default View.extend({
             [method](rendered);
       } else this.$el.append(rendered);
     }
-    this.items.push(item);
-    return rendered;
-  },
 
-  remove() {
-    View.prototype.remove.apply(this, arguments);
-    this.items.map(i => i.remove());
+    return rendered;
   },
 
   /**

@@ -239,9 +239,9 @@ export default () => {
      * });
      * */
     load(keys, clb) {
-      const st = this.get(this.getCurrent());
-      const keysF = [];
-      let result = {};
+      var st = this.get(this.getCurrent());
+      var keysF = [];
+      var result = {};
 
       if (typeof keys === 'string') keys = [keys];
       this.onStart('load', keys);
@@ -254,7 +254,13 @@ export default () => {
         st.load(
           keysF,
           res => {
-            result = this.__clearKeys(res);
+            // Restore keys name
+            var reg = new RegExp('^' + c.id + '');
+            for (var itemKey in res) {
+              var itemKeyR = itemKey.replace(reg, '');
+              result[itemKeyR] = res[itemKey];
+            }
+
             this.onAfter('load', result);
             clb && clb(result);
             this.onEnd('load', result);
@@ -267,24 +273,6 @@ export default () => {
       } else {
         clb && clb(result);
       }
-    },
-
-    /**
-     * Restore key names
-     * @param {Object} data
-     * @returns {Object}
-     * @private
-     */
-    __clearKeys(data = {}) {
-      const result = {};
-      const reg = new RegExp('^' + c.id + '');
-
-      for (let itemKey in data) {
-        const itemKeyR = itemKey.replace(reg, '');
-        result[itemKeyR] = data[itemKey];
-      }
-
-      return result;
     },
 
     /**

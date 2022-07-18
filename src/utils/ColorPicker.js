@@ -4,11 +4,9 @@
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead
 // License: MIT
-import { hasWin } from 'utils/mixins';
 
 export default function($, undefined) {
   'use strict';
-  if (!hasWin()) return;
 
   var defaultOpts = {
       // Callbacks
@@ -209,7 +207,6 @@ export default function($, undefined) {
       resize = throttle(reflow, 10),
       visible = false,
       isDragging = false,
-      isDefault = true,
       dragWidth = 0,
       dragHeight = 0,
       dragHelperHeight = 0,
@@ -785,7 +782,6 @@ export default function($, undefined) {
         isEmpty = true;
       } else {
         isEmpty = false;
-        isDefault = !color; // if no color is available an empty string will be passed.  tinycolor will then set it to #000
         newColor = tinycolor(color);
         newHsv = newColor.toHsv();
 
@@ -960,7 +956,7 @@ export default function($, undefined) {
     function updateOriginalInput(fireCallback) {
       var color = get(),
         displayColor = '',
-        hasChanged = isDefault ? true : !tinycolor.equals(color, colorOnShow);
+        hasChanged = !tinycolor.equals(color, colorOnShow);
 
       if (color) {
         displayColor = color.toString(currentPreferredFormat);
@@ -1345,13 +1341,13 @@ export default function($, undefined) {
     }
 
     var rgb = inputToRGB(color);
-    this._originalInput = color;
-    this._r = rgb.r;
-    this._g = rgb.g;
-    this._b = rgb.b;
-    this._a = rgb.a;
-    this._roundA = mathRound(100 * this._a) / 100;
-    this._format = opts.format || rgb.format;
+    (this._originalInput = color),
+      (this._r = rgb.r),
+      (this._g = rgb.g),
+      (this._b = rgb.b),
+      (this._a = rgb.a),
+      (this._roundA = mathRound(100 * this._a) / 100),
+      (this._format = opts.format || rgb.format);
     this._gradientType = opts.gradientType;
 
     // Don't let the range of [0,255] come back in [0,1].

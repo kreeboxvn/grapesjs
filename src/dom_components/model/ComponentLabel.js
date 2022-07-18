@@ -1,18 +1,18 @@
 import Component from './ComponentText';
-import { toLowerCase } from 'utils/mixins';
-
-const type = 'label';
 
 export default Component.extend(
   {
     defaults: {
       ...Component.prototype.defaults,
-      type,
-      tagName: type,
+      tagName: 'label',
       traits: ['id', 'title', 'for']
     }
   },
   {
-    isComponent: el => toLowerCase(el.tagName) === type
+    isComponent(el) {
+      if (el.tagName == 'LABEL') {
+        return { type: 'label' };
+      }
+    }
   }
 );

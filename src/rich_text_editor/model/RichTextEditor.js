@@ -80,18 +80,18 @@ export default class RichTextEditor {
     this.setEl(el);
     this.updateActiveActions = this.updateActiveActions.bind(this);
 
-    const acts = (settings.actions || []).map(action => {
-      let result = action;
+    const settAct = settings.actions || [];
+    settAct.forEach((action, i) => {
       if (typeof action === 'string') {
-        result = { ...defActions[action] };
+        action = defActions[action];
       } else if (defActions[action.name]) {
-        result = { ...defActions[action.name], ...action };
+        action = { ...defActions[action.name], ...action };
       }
-      return result;
+      settAct[i] = action;
     });
-    const actions = acts.length
-      ? acts
-      : Object.keys(defActions).map(a => defActions[a]);
+    const actions = settAct.length
+      ? settAct
+      : Object.keys(defActions).map(action => defActions[action]);
 
     settings.classes = {
       ...{

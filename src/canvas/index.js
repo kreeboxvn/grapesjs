@@ -25,10 +25,6 @@
  * * [scrollTo](#scrollto)
  * * [setZoom](#setzoom)
  * * [getZoom](#getzoom)
- * * [getCoords](#getcoords)
- * * [setCoords](#setcoords)
- *
- * [Component]: component.html
  *
  * @module Canvas
  */
@@ -38,7 +34,6 @@ import defaults from './config/config';
 import Canvas from './model/Canvas';
 import canvasView from './view/CanvasView';
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default () => {
   let c = {};
   let canvas;
@@ -53,6 +48,11 @@ export default () => {
       return CanvasView;
     },
 
+    /**
+     * Name of the module
+     * @type {String}
+     * @private
+     */
     name: 'Canvas',
 
     /**
@@ -68,10 +68,9 @@ export default () => {
       };
 
       this.em = c.em;
-      const { scripts, styles } = c;
       const ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
-      canvas = new Canvas({ scripts, styles }, config);
+      canvas = new Canvas(config);
       this.model = canvas;
       this.startAutoscroll = this.startAutoscroll.bind(this);
       this.stopAutoscroll = this.stopAutoscroll.bind(this);
@@ -80,6 +79,10 @@ export default () => {
 
     onLoad() {
       this.model.init();
+      CanvasView = new canvasView({
+        model: canvas,
+        config: c
+      });
     },
 
     getModel() {
@@ -88,9 +91,7 @@ export default () => {
 
     /**
      * Get the configuration object
-     * @returns {Object} Configuration object
-     * @example
-     * console.log(canvas.getConfig())
+     * @return {Object}
      */
     getConfig() {
       return c;
@@ -98,22 +99,22 @@ export default () => {
 
     /**
      * Get the canvas element
-     * @returns {HTMLElement}
+     * @return {HTMLElement}
      */
     getElement() {
       return CanvasView.el;
     },
 
     getFrame(index) {
-      return this.getFrames()[index || 0];
+      return index ? this.getFrames()[index] : canvas.get('frame');
     },
 
     /**
-     * Get the main frame element of the canvas
-     * @returns {HTMLIFrameElement}
+     * Get the iframe element of the canvas
+     * @return {HTMLIFrameElement}
      */
     getFrameEl() {
-      const { frame } = CanvasView || {};
+      const { frame } = CanvasView;
       return frame && frame.el;
     },
 
@@ -122,16 +123,16 @@ export default () => {
     },
 
     /**
-     * Get the main frame window instance
-     * @returns {Window}
+     * Get the window instance of the iframe element
+     * @return {Window}
      */
     getWindow() {
       return this.getFrameEl().contentWindow;
     },
 
     /**
-     * Get the main frame document element
-     * @returns {HTMLDocument}
+     * Get the document of the iframe element
+     * @return {HTMLDocument}
      */
     getDocument() {
       const frame = this.getFrameEl();
@@ -139,7 +140,7 @@ export default () => {
     },
 
     /**
-     * Get the main frame body element
+     * Get the body of the iframe element
      * @return {HTMLBodyElement}
      */
     getBody() {
@@ -161,7 +162,7 @@ export default () => {
 
     /**
      * Returns element containing all global canvas tools
-     * @returns {HTMLElement}
+     * @return {HTMLElement}
      * @private
      */
     getGlobalToolsEl() {
@@ -170,7 +171,7 @@ export default () => {
 
     /**
      * Returns element containing all canvas tools
-     * @returns {HTMLElement}
+     * @return {HTMLElement}
      * @private
      */
     getToolsEl(compView) {
@@ -179,7 +180,7 @@ export default () => {
 
     /**
      * Returns highlighter element
-     * @returns {HTMLElement}
+     * @return {HTMLElement}
      * @private
      */
     getHighlighter(compView) {
@@ -188,7 +189,7 @@ export default () => {
 
     /**
      * Returns badge element
-     * @returns {HTMLElement}
+     * @return {HTMLElement}
      * @private
      */
     getBadgeEl(compView) {
@@ -197,7 +198,7 @@ export default () => {
 
     /**
      * Returns placer element
-     * @returns {HTMLElement}
+     * @return {HTMLElement}
      * @private
      */
     getPlacerEl() {
@@ -206,7 +207,7 @@ export default () => {
 
     /**
      * Returns ghost element
-     * @returns {HTMLElement}
+     * @return {HTMLElement}
      * @private
      */
     getGhostEl() {
@@ -215,7 +216,7 @@ export default () => {
 
     /**
      * Returns toolbar element
-     * @returns {HTMLElement}
+     * @return {HTMLElement}
      * @private
      */
     getToolbarEl() {
@@ -224,7 +225,7 @@ export default () => {
 
     /**
      * Returns resizer element
-     * @returns {HTMLElement}
+     * @return {HTMLElement}
      * @private
      */
     getResizerEl() {
@@ -233,7 +234,7 @@ export default () => {
 
     /**
      * Returns offset viewer element
-     * @returns {HTMLElement}
+     * @return {HTMLElement}
      * @private
      */
     getOffsetViewerEl(compView) {
@@ -246,25 +247,24 @@ export default () => {
 
     /**
      * Returns fixed offset viewer element
-     * @returns {HTMLElement}
+     * @return {HTMLElement}
      * @private
      */
     getFixedOffsetViewerEl() {
       return CanvasView.fixedOffsetEl;
     },
 
+    /**
+     * Render canvas
+     * @private
+     * */
     render() {
-      CanvasView && CanvasView.remove();
-      CanvasView = new canvasView({
-        model: canvas,
-        config: c
-      });
       return CanvasView.render().el;
     },
 
     /**
      * Get frame position
-     * @returns {Object}
+     * @return {Object}
      * @private
      */
     getOffset() {
@@ -279,7 +279,7 @@ export default () => {
     /**
      * Get the offset of the passed component element
      * @param  {HTMLElement} el
-     * @returns {Object}
+     * @return {Object}
      * @private
      */
     offset(el) {
@@ -301,7 +301,7 @@ export default () => {
     /**
      * Get element position relative to the canvas
      * @param {HTMLElement} el
-     * @returns {Object}
+     * @return {Object}
      * @private
      */
     getElementPos(el, opts) {
@@ -311,7 +311,7 @@ export default () => {
     /**
      * Returns element's offsets like margins and paddings
      * @param {HTMLElement} el
-     * @returns {Object}
+     * @return {Object}
      * @private
      */
     getElementOffsets(el) {
@@ -461,49 +461,6 @@ export default () => {
       return result;
     },
 
-    getTargetToElementFixedBottom(el, elToMove, opts = {}) {
-      const pos = opts.pos || this.getElementPos(el);
-      const cvOff = opts.canvasOff || this.canvasRectOffset(el, pos);
-      const toolbarH = elToMove.offsetHeight || 0;
-      const toolbarW = elToMove.offsetWidth || 0;
-      const elRight = pos.left + pos.width;
-      const cv = this.getCanvasView();
-      const frCvOff = cv.getPosition();
-      const frameOffset = cv.getFrameOffset(el);
-      const { event } = opts;
-
-      let bottom = -toolbarH;
-      let left = pos.width - toolbarW;
-      left = pos.left < -left ? -pos.left : left;
-      left = elRight > frCvOff.width ? left - (elRight - frCvOff.width) : left;
-
-      // Scroll with the window if the bottom edge is reached and the
-      // element is bigger than the canvas
-      const fullHeight = pos.height + toolbarH;
-      const elIsShort = fullHeight < frameOffset.height;
-      const cvOffBottom = cvOff.top + pos.height;
-
-      if (frCvOff.height - cvOffBottom < toolbarH) {
-        if (elIsShort) {
-          bottom = bottom + fullHeight;
-        } else {
-          bottom = cvOff.top < 0 ? cvOffBottom - frCvOff.height : pos.height;
-        }
-      }
-
-      const result = {
-        bottom,
-        left,
-        canvasOffsetTop: cvOff.top,
-        canvasOffsetLeft: cvOff.left
-      };
-
-      // In this way I can catch data and also change the position strategy
-      event && this.em.trigger(event, result);
-
-      return result;
-    },
-
     /**
      * Instead of simply returning e.clientX and e.clientY this function
      * calculates also the offset based on the canvas. This is helpful when you
@@ -554,7 +511,7 @@ export default () => {
 
     /**
      * Check if the canvas is focused
-     * @returns {Boolean}
+     * @return {Boolean}
      */
     hasFocus() {
       return this.getDocument().hasFocus();
@@ -582,7 +539,7 @@ export default () => {
      * executed via `scrollIntoView` API and options of this method are
      * passed to it. For instance, you can scroll smoothly by using
      * `{ behavior: 'smooth' }`.
-     * @param  {HTMLElement|[Component]} el
+     * @param  {HTMLElement|Component} el
      * @param  {Object} [opts={}] Options, same as options for `scrollIntoView`
      * @param  {Boolean} [opts.force=false] Force the scroll, even if the element is already visible
      * @example
@@ -617,11 +574,9 @@ export default () => {
     },
 
     /**
-     * Set canvas zoom value
+     * Set zoom value
      * @param {Number} value The zoom value, from 0 to 100
      * @returns {this}
-     * @example
-     * canvas.setZoom(50); // set zoom to 50%
      */
     setZoom(value) {
       canvas.set('zoom', parseFloat(value));
@@ -629,40 +584,11 @@ export default () => {
     },
 
     /**
-     * Get canvas zoom value
+     * Get zoom value
      * @returns {Number}
-     * @example
-     * canvas.setZoom(50); // set zoom to 50%
-     * const zoom = canvas.getZoom(); // 50
      */
     getZoom() {
       return parseFloat(canvas.get('zoom'));
-    },
-
-    /**
-     * Set canvas position coordinates
-     * @param {Number} x Horizontal position
-     * @param {Number} y Vertical position
-     * @returns {this}
-     * @example
-     * canvas.setCoords(100, 100);
-     */
-    setCoords(x, y) {
-      canvas.set({ x: parseFloat(x), y: parseFloat(y) });
-      return this;
-    },
-
-    /**
-     * Get canvas position coordinates
-     * @returns {Object} Object containing coordinates
-     * @example
-     * canvas.setCoords(100, 100);
-     * const coords = canvas.getCoords();
-     * // { x: 100, y: 100 }
-     */
-    getCoords() {
-      const { x, y } = canvas.attributes;
-      return { x, y };
     },
 
     getZoomDecimal() {
@@ -688,22 +614,23 @@ export default () => {
      * @param {Object} props Frame properties
      * @returns {Frame}
      * @example
-     * canvas.addFrame({
-     *   name: 'Mobile home page',
-     *   x: 100, // Position in canvas
-     *   y: 100,
-     *   width: 500, // Frame dimensions
-     *   height: 600,
-     *   // device: 'DEVICE-ID',
-     *   components: [
-     *     '<h1 class="testh">Title frame</h1>',
-     *     '<p class="testp">Paragraph frame</p>',
-     *   ],
-     *   styles: `
-     *     .testh { color: red; }
-     *     .testp { color: blue; }
-     *   `,
-     * });
+     *
+        editor.Canvas.addFrame({
+          name: 'Mobile home page',
+          x: 100, // Position in canvas
+          y: 100,
+          width: 500, // Frame dimensions
+          height: 600,
+          // device: 'DEVICE-ID',
+          components: [
+            '<h1 class="testh">Title frame</h1>',
+            '<p class="testp">Paragraph frame</p>',
+          ],
+          styles: `
+            .testh { color: red; }
+            .testp { color: blue; }
+          `,
+        });
      */
     addFrame(props = {}, opts = {}) {
       return canvas.get('frames').add(
@@ -719,7 +646,7 @@ export default () => {
 
     destroy() {
       canvas.stopListening();
-      CanvasView && CanvasView.remove();
+      CanvasView.remove();
       [c, canvas, CanvasView].forEach(i => (i = {}));
       ['em', 'model', 'droppable'].forEach(i => (this[i] = {}));
     }

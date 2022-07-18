@@ -1,27 +1,22 @@
-import { View } from 'backbone';
-import html from 'utils/html';
+import { template } from 'underscore';
+import Backbone from 'backbone';
 
-export default class DevicesView extends View {
-  template({ ppfx, label }) {
-    return html`
-      <div class="${ppfx}device-label">${label}</div>
-      <div class="${ppfx}field ${ppfx}select">
-        <span id="${ppfx}input-holder">
-          <select class="${ppfx}devices"></select>
-        </span>
-        <div class="${ppfx}sel-arrow">
-          <div class="${ppfx}d-s-arrow"></div>
-        </div>
+export default Backbone.View.extend({
+  template: template(`
+    <div class="<%= ppfx %>device-label"><%= deviceLabel %></div>
+    <div class="<%= ppfx %>field <%= ppfx %>select">
+      <span id="<%= ppfx %>input-holder">
+        <select class="<%= ppfx %>devices"></select>
+      </span>
+      <div class="<%= ppfx %>sel-arrow">
+        <div class="<%= ppfx %>d-s-arrow"></div>
       </div>
-      <button style="display:none" class="${ppfx}add-trasp">+</button>
-    `;
-  }
+    </div>
+    <button style="display:none" class="<%= ppfx %>add-trasp">+</button>`),
 
-  events() {
-    return {
-      change: 'updateDevice'
-    };
-  }
+  events: {
+    change: 'updateDevice'
+  },
 
   initialize(o) {
     this.config = o.config || {};
@@ -30,14 +25,14 @@ export default class DevicesView extends View {
     this.events['click .' + this.ppfx + 'add-trasp'] = this.startAdd;
     this.listenTo(this.em, 'change:device', this.updateSelect);
     this.delegateEvents();
-  }
+  },
 
   /**
    * Start adding new device
    * @return {[type]} [description]
    * @private
    */
-  startAdd() {}
+  startAdd() {},
 
   /**
    * Update device of the editor
@@ -50,7 +45,7 @@ export default class DevicesView extends View {
       var val = devEl ? devEl.val() : '';
       em.set('device', val);
     }
-  }
+  },
 
   /**
    * Update select value on device update
@@ -61,10 +56,10 @@ export default class DevicesView extends View {
     var devEl = this.devicesEl;
     if (em && em.getDeviceModel && devEl) {
       var device = em.getDeviceModel();
-      var name = device ? device.get('id') : '';
+      var name = device ? device.get('name') : '';
       devEl.val(name);
     }
-  }
+  },
 
   /**
    * Return devices options
@@ -78,20 +73,23 @@ export default class DevicesView extends View {
     collection.each(device => {
       const { name, id } = device.attributes;
       const label = (em && em.t && em.t(`deviceManager.devices.${id}`)) || name;
-      result += `<option value="${id || name}">${label}</option>`;
+      result += `<option value="${name}">${label}</option>`;
     });
 
     return result;
-  }
+  },
 
   render() {
     const { em, ppfx, $el, el } = this;
-    const label = em && em.t && em.t('deviceManager.device');
-    $el.html(this.template({ ppfx, label }));
+    $el.html(
+      this.template({
+        ppfx,
+        deviceLabel: em && em.t && em.t('deviceManager.device')
+      })
+    );
     this.devicesEl = $el.find(`.${ppfx}devices`);
     this.devicesEl.append(this.getOptions());
-    this.devicesEl.val(em.get('device'));
     el.className = `${ppfx}devices-c`;
     return this;
   }
-}
+});

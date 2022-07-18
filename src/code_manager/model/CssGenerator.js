@@ -1,11 +1,10 @@
 import Backbone from 'backbone';
-import { bindAll, isUndefined, each } from 'underscore';
+import { isUndefined, each } from 'underscore';
 
 const maxValue = Number.MAX_VALUE;
 
 export default Backbone.Model.extend({
   initialize() {
-    bindAll(this, 'sortRules');
     this.compCls = [];
     this.ids = [];
   },
@@ -40,26 +39,23 @@ export default Backbone.Model.extend({
   },
 
   build(model, opts = {}) {
-    const { json } = opts;
+    const cssc = opts.cssc;
     const em = opts.em || '';
-    const cssc = opts.cssc || (em && em.get('CssComposer'));
     this.em = em;
     this.compCls = [];
     this.ids = [];
-    this.model = model;
-    const codeJson = [];
-    let code = model ? this.buildFromModel(model, opts) : '';
+    var code = this.buildFromModel(model, opts);
     const clearStyles =
       isUndefined(opts.clearStyles) && em
         ? em.getConfig('clearStyles')
         : opts.clearStyles;
 
     if (cssc) {
-      const rules = opts.rules || cssc.getAll();
+      const rules = cssc.getAll();
       const atRules = {};
       const dump = [];
 
-      rules.forEach(rule => {
+      rules.each(rule => {
         const atRule = rule.getAtRule();
 
         if (atRule) {
@@ -72,13 +68,7 @@ export default Backbone.Model.extend({
           return;
         }
 
-        const res = this.buildFromRule(rule, dump, opts);
-
-        if (json) {
-          codeJson.push(res);
-        } else {
-          code += res;
-        }
+        code += this.buildFromRule(rule, dump, opts);
       });
 
       this.sortMediaObject(atRules).forEach(item => {
@@ -94,8 +84,6 @@ export default Backbone.Model.extend({
           } else {
             rulesStr += ruleStr;
           }
-
-          json && codeJson.push(ruleStr);
         });
 
         if (rulesStr) {
@@ -103,10 +91,10 @@ export default Backbone.Model.extend({
         }
       });
 
-      em && clearStyles && rules.remove && rules.remove(dump);
+      em && clearStyles && rules.remove(dump);
     }
 
-    return json ? codeJson.filter(r => r) : code;
+    return code;
   },
 
   /**
@@ -116,7 +104,6 @@ export default Backbone.Model.extend({
    */
   buildFromRule(rule, dump, opts = {}) {
     let result = '';
-    const { model } = this;
     const selectorStrNoAdd = rule.selectorsToString({ skipAdd: 1 });
     const selectorsAdd = rule.get('selectorsAdd');
     const singleAtRule = rule.get('singleAtRule');
@@ -134,9 +121,9 @@ export default Backbone.Model.extend({
       }
     });
 
-    if ((selectorStrNoAdd && found) || selectorsAdd || singleAtRule || !model) {
+    if ((selectorStrNoAdd && found) || selectorsAdd || singleAtRule) {
       const block = rule.getDeclaration({ body: 1 });
-      block && (opts.json ? (result = rule) : (result += block));
+      block && (result += block);
     } else {
       dump.push(rule);
     }
@@ -172,15 +159,5 @@ export default Backbone.Model.extend({
       const right = isMobFirst ? b.key : a.key;
       return this.getQueryLength(left) - this.getQueryLength(right);
     });
-  },
-
-  sortRules(a, b) {
-    const getKey = rule => rule.get('mediaText');
-    const isMobFirst = [getKey(a), getKey(b)].every(
-      q => q.indexOf('min-width') !== -1
-    );
-    const left = isMobFirst ? getKey(a) : getKey(b);
-    const right = isMobFirst ? getKey(b) : getKey(a);
-    return this.getQueryLength(left) - this.getQueryLength(right);
   }
 });

@@ -25,7 +25,7 @@
  */
 
 import UndoManager from 'backbone-undo';
-import { isArray, isBoolean, isEmpty } from 'underscore';
+import { isArray, isBoolean } from 'underscore';
 
 export default () => {
   let em;
@@ -48,10 +48,9 @@ export default () => {
      * @private
      */
     init(opts = {}) {
-      config = { ...configDef, ...opts };
+      config = { ...opts, ...configDef };
       em = config.em;
       this.em = em;
-      const fromUndo = true;
       um = new UndoManager({ track: true, register: [], ...config });
       um.changeUndoType('change', {
         condition: object => {
@@ -73,23 +72,15 @@ export default () => {
         on(object, v, opts) {
           !beforeCache && (beforeCache = object.previousAttributes());
           const opt = opts || v || {};
-          opt.noUndo &&
-            setTimeout(() => {
-              beforeCache = null;
-            });
           if (hasSkip(opt)) {
             return;
           } else {
-            const after = object.toJSON({ fromUndo });
             const result = {
               object,
               before: beforeCache,
-              after
+              after: object.toJSON({ fromUndo: 1 })
             };
             beforeCache = null;
-            // Skip undo in case of empty changes
-            if (isEmpty(after)) return;
-
             return result;
           }
         }
@@ -101,7 +92,7 @@ export default () => {
             object: collection,
             before: undefined,
             after: model,
-            options: { ...options, fromUndo }
+            options: { ...options }
           };
         }
       });
@@ -112,7 +103,7 @@ export default () => {
             object: collection,
             before: model,
             after: undefined,
-            options: { ...options, fromUndo }
+            options: { ...options }
           };
         }
       });
