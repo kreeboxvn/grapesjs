@@ -3,8 +3,10 @@ import { getModel, isEscKey, isEnterKey } from 'utils/mixins';
 import Backbone from 'backbone';
 import ComponentView from 'dom_components/view/ComponentView';
 import { eventDrag } from 'dom_components/model/Component';
+import { allBlocks } from '../../constants';
 
 const inputProp = 'contentEditable';
+const styleOpts = { mediaText: '' };
 const $ = Backbone.$;
 let ItemsView;
 
@@ -12,11 +14,12 @@ export default Backbone.View.extend({
   events: {
     'mousedown [data-toggle-move]': 'startSort',
     'touchstart [data-toggle-move]': 'startSort',
-    'click [data-toggle-visible]': 'toggleVisibility',
     'click [data-toggle-open]': 'toggleOpening',
+    'click [data-toggle-visible]': 'toggleVisibility',
     'click [data-toggle-select]': 'handleSelect',
-    'mouseover [data-toggle-select]': 'handleHover',
-    'mouseout [data-toggle-select]': 'handleHoverOut',
+    'contextmenu [data-contextmenu]': 'emitOpenContextMenu',
+    'mouseover [data-contextmenu]': 'handleHover',
+    'mouseout [data-contextmenu]': 'handleHoverOut',
     'dblclick [data-name]': 'handleEdit',
     'keydown [data-name]': 'handleEditKey',
     'focusout [data-name]': 'handleEditEnd'
@@ -29,36 +32,44 @@ export default Backbone.View.extend({
     const addClass = !count ? this.clsNoChild : '';
     const clsTitle = `${this.clsTitle} ${addClass}`;
     const clsTitleC = `${this.clsTitleC} ${ppfx}one-bg`;
-    const clsCaret = `${this.clsCaret} fa fa-chevron-right`;
+    const clsCaret = `${this.clsCaret}`;
     const clsInput = `${this.inputNameCls} ${clsNoEdit} ${ppfx}no-app`;
     const level = this.level + 1;
-    const gut = `${30 + level * 10}px`;
+    const gut = `${-8 + level * 16}px`;
+    const moveWidth = `${-8 + level * 16 + 16}px`;
     const name = model.getName();
-    const icon = model.getIcon();
+    let icon = model.getIcon();
+    if (!icon) {
+      const type = model.attributes?.type;
+      if (type) {
+        icon = allBlocks[type]?.icon?.(pfx);
+      }
+    }
     const clsBase = `${pfx}layer`;
 
     return `
-      ${
-        hidable
-          ? `<i class="${pfx}layer-vis fa fa-eye ${
-              this.isVisible() ? '' : 'fa-eye-slash'
-            }" data-toggle-visible></i>`
-          : ''
-      }
-      <div class="${clsTitleC}">
-        <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
-          <div class="${pfx}layer-title-inn" title="${name}">
-            <i class="${clsCaret}" data-toggle-open></i>
-            ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
-            <span class="${clsInput}" data-name>${name}</span>
+        ${
+          hidable
+            ? `<i class="${pfx}layer-vis fa fa-eye ${
+                this.isVisible() ? '' : 'fa-eye-slash'
+              }" data-toggle-visible></i>`
+            : ''
+        }
+        <div class="${clsTitleC}" data-contextmenu>
+          <div class="${clsTitle}" style="padding-left: ${gut}" data-toggle-select>
+            <div class="${pfx}layer-title-inn" title="${name}">
+              <div class="${clsCaret}" data-toggle-open>
+                <i class="fa fa-caret-right"></i>
+              </div>
+              ${icon ? `<span class="${clsBase}__icon">${icon}</span>` : ''}
+              <span class="${clsInput}" data-name>${name}</span>
+            </div>
           </div>
+          <div class="${
+            this.clsMove
+          }" style="width: calc(100% - ${moveWidth})" data-toggle-move></div>
         </div>
-      </div>
-      <div class="${this.clsCount}" data-count>${count || ''}</div>
-      <div class="${this.clsMove}" data-toggle-move>
-        <i class="fa fa-arrows"></i>
-      </div>
-      <div class="${this.clsChildren}"></div>`;
+        <div class="${this.clsChildren}"></div>`;
   },
 
   initialize(o = {}) {
@@ -80,22 +91,25 @@ export default Backbone.View.extend({
     const type = model.get('type') || 'default';
     model.set('open', false);
     this.listenTo(components, 'remove add reset', this.checkChildren);
-    this.listenTo(model, 'change:status', this.updateStatus);
-    this.listenTo(model, 'change:open', this.updateOpening);
-    this.listenTo(model, 'change:layerable', this.updateLayerable);
-    this.listenTo(model, 'change:style:display', this.updateVisibility);
-    this.listenTo(model, 'rerender:layer', this.render);
+    [
+      ['change:status', this.updateStatus],
+      ['change:open', this.updateOpening],
+      ['change:layerable', this.updateLayerable],
+      ['change:style:display', this.updateVisibility],
+      ['rerender:layer', this.render]
+    ].forEach(item => this.listenTo(model, item[0], item[1]));
     this.className = `${pfx}layer ${pfx}layer__t-${type} no-select ${ppfx}two-color`;
     this.inputNameCls = `${ppfx}layer-name`;
     this.clsTitleC = `${pfx}layer-title-c`;
     this.clsTitle = `${pfx}layer-title`;
     this.clsCaret = `${pfx}layer-caret`;
-    this.clsCount = `${pfx}layer-count`;
+    // this.clsCount = `${pfx}layer-count`;
     this.clsMove = `${pfx}layer-move`;
     this.clsChildren = `${pfx}layer-children`;
     this.clsNoChild = `${pfx}layer-no-chld`;
     this.clsEdit = `${this.inputNameCls}--edit`;
     this.clsNoEdit = `${this.inputNameCls}--no-edit`;
+    this.clsNoMove = `${this.clsMove}--no-move`;
     this.$el.data('model', model);
     this.$el.data('collection', components);
     model.viewLayer = this;
@@ -119,10 +133,17 @@ export default Backbone.View.extend({
     const model = this.model;
     const hClass = `${pfx}layer-hidden`;
     const hideIcon = 'fa-eye-slash';
-    const hidden = model.getStyle().display === 'none';
+    const hidden = model.getStyle(styleOpts).display === 'none';
     const method = hidden ? 'addClass' : 'removeClass';
     this.$el[method](hClass);
     this.getVisibilityEl()[method](hideIcon);
+  },
+
+  emitOpenContextMenu(e) {
+    const { em } = this;
+    em && em.trigger('component:contextmenu:open', e, this);
+
+    return false;
   },
 
   /**
@@ -136,7 +157,7 @@ export default Backbone.View.extend({
     const { model, em } = this;
     const prevDspKey = '__prev-display';
     const prevDisplay = model.get(prevDspKey);
-    const style = model.getStyle();
+    const style = model.getStyle(styleOpts);
     const { display } = style;
     const hidden = display == 'none';
 
@@ -152,7 +173,7 @@ export default Backbone.View.extend({
       style.display = 'none';
     }
 
-    model.setStyle(style);
+    model.setStyle(style, styleOpts);
     em && em.trigger('component:toggled'); // Updates Style Manager #2938
   },
 
@@ -161,7 +182,7 @@ export default Backbone.View.extend({
    */
   handleEdit(e) {
     e && e.stopPropagation();
-    const { em, $el, clsNoEdit, clsEdit } = this;
+    const { em, $el, clsNoEdit, clsEdit, clsNoMove } = this;
     const inputEl = this.getInputName();
     inputEl[inputProp] = true;
     inputEl.focus();
@@ -171,6 +192,7 @@ export default Backbone.View.extend({
       .find(`.${this.inputNameCls}`)
       .removeClass(clsNoEdit)
       .addClass(clsEdit);
+    $el.find(`.${this.clsMove}`).addClass(clsNoMove);
   },
 
   handleEditKey(ev) {
@@ -183,17 +205,23 @@ export default Backbone.View.extend({
    */
   handleEditEnd(e) {
     e && e.stopPropagation();
-    const { em, $el, clsNoEdit, clsEdit } = this;
+    const { em, $el, clsNoEdit, clsEdit, clsNoMove } = this;
     const inputEl = this.getInputName();
     const name = inputEl.textContent;
     inputEl.scrollLeft = 0;
     inputEl[inputProp] = false;
-    this.model.set({ 'custom-name': name });
+    this.setName(name, { component: this.model, propName: 'custom-name' });
     em && em.setEditing(0);
     $el
       .find(`.${this.inputNameCls}`)
       .addClass(clsNoEdit)
       .removeClass(clsEdit);
+
+    $el.find(`.${this.clsMove}`).removeClass(clsNoMove);
+  },
+
+  setName(name, { propName }) {
+    this.model.set(propName, name);
   },
 
   /**
@@ -215,15 +243,19 @@ export default Backbone.View.extend({
   updateOpening() {
     var opened = this.opt.opened || {};
     var model = this.model;
-    const chvDown = 'fa-chevron-down';
+    const chvDown = 'fa-caret-down';
+    const chvRight = 'fa-caret-right';
+    const $caret = this.getCaretIcon();
 
     if (model.get('open')) {
       this.$el.addClass('open');
-      this.getCaret().addClass(chvDown);
+      $caret.addClass(chvDown);
+      $caret.removeClass(chvRight);
       opened[model.cid] = model;
     } else {
       this.$el.removeClass('open');
-      this.getCaret().removeClass(chvDown);
+      $caret.removeClass(chvDown);
+      $caret.addClass(chvRight);
       delete opened[model.cid];
     }
   },
@@ -236,11 +268,14 @@ export default Backbone.View.extend({
    * */
   toggleOpening(e) {
     const { model } = this;
+    e.preventDefault();
+    e.stopPropagation();
     e.stopImmediatePropagation();
 
     if (!model.get('components').length) return;
 
     model.set('open', !model.get('open'));
+    return false;
   },
 
   /**
@@ -277,14 +312,71 @@ export default Backbone.View.extend({
    * @param	Event
    * */
   startSort(e) {
-    e.stopPropagation();
+    e.preventDefault();
+    e.stopImmediatePropagation();
     const { em, sorter } = this;
     // Right or middel click
     if (e.button && e.button !== 0) return;
 
+    if (!this.model.get('draggable') || !this.config.sortable) {
+      em.trigger(`move:error`, {
+        code: 'dragNotSupported',
+        model: this.model,
+        config: this.config
+      });
+      return;
+    }
+
+    // prevent sorting if target is a link or button
+    if (e?.target) {
+      if (e.target.className.includes('fa-caret')) {
+        return;
+      }
+
+      const preventSortList = [
+        'toggleOpen',
+        'toggleVisibility',
+        'handleSelect',
+        'handleEdit'
+      ];
+      if (
+        preventSortList.some(data => e.target.dataset?.hasOwnProperty(data))
+      ) {
+        return;
+      }
+    }
+
     if (sorter) {
+      // type sorter = {
+      //   dragHelper: HTMLElement,
+      //   dropContent: HTMLElement,
+      //   dropModel: Model,
+      //   eV: HTMLElement, // element to be dragged
+      //   el: HTMLElement, // parent
+      //   endMove: Function(e: Event),
+      //   moveDragHelper: Function,
+      //   onMove,
+      //   onEndMove,
+      //   onMoveClb,
+      //   onStart,
+      //   rollback: Function,
+      //   startSort: Function(target: HTMLElement),
+      // }
+
       sorter.onStart = data => em.trigger(`${eventDrag}:start`, data);
       sorter.onMoveClb = data => em.trigger(eventDrag, data);
+      const endMove = sorter.onEndMove;
+      sorter.onEndMove = (created, sorter, data) => {
+        // console.warn('endMove', { created, sorter, data });
+        if (!created && data.cancelled != 1) {
+          em.trigger(`move:error`, {
+            code: 'wrongDropPosition',
+            model: this.model,
+            data
+          });
+        }
+        endMove(created, sorter, data);
+      };
       sorter.startSort(e.target);
     }
   },
@@ -381,6 +473,17 @@ export default Backbone.View.extend({
     return this.caret;
   },
 
+  getCaretIcon() {
+    if (!this.caretIcon || !this.caretIcon.length) {
+      this.caretIcon = this.$el
+        .children(`.${this.clsTitleC}`)
+        .find(`.${this.clsCaret}`)
+        .children('i');
+    }
+
+    return this.caretIcon;
+  },
+
   setRoot(el) {
     el = isString(el) ? this.em.getWrapper().find(el)[0] : el;
     const model = getModel(el, $);
@@ -388,7 +491,7 @@ export default Backbone.View.extend({
     this.stopListening();
     this.model = model;
     this.initialize(this.opt);
-    this.render();
+    this._rendered && this.render();
   },
 
   updateLayerable() {
@@ -397,19 +500,32 @@ export default Backbone.View.extend({
     toRerender.render();
   },
 
+  __clearItems() {
+    const { items } = this;
+    items && items.remove();
+  },
+
+  remove() {
+    Backbone.View.prototype.remove.apply(this, arguments);
+    this.__clearItems();
+  },
+
   render() {
     const { model, config, pfx, ppfx, opt } = this;
+    this.__clearItems();
     const { isCountable } = opt;
     const hidden = isCountable && !isCountable(model, config.hideTextnode);
     const vis = this.isVisible();
     const el = this.$el.empty();
     const level = this.level + 1;
+    this.inputName = 0;
 
     if (isUndefined(ItemsView)) {
       ItemsView = require('./ItemsView').default;
     }
 
-    const children = new ItemsView({
+    this.items = new ItemsView({
+      ItemView: opt.ItemView,
       collection: model.get('components'),
       config: this.config,
       sorter: this.sorter,
@@ -417,7 +533,8 @@ export default Backbone.View.extend({
       parentView: this,
       parent: model,
       level
-    }).render().$el;
+    });
+    const children = this.items.render().$el;
 
     if (!this.config.showWrapper && level === 1) {
       el.append(children);
@@ -427,7 +544,9 @@ export default Backbone.View.extend({
     }
 
     if (!model.get('draggable') || !this.config.sortable) {
-      el.children(`.${this.clsMove}`).remove();
+      el.children(`.${this.clsTitleC}`)
+        .children(`.${this.clsMove}`)
+        .remove();
     }
 
     !vis && (this.className += ` ${pfx}hide`);
@@ -437,6 +556,7 @@ export default Backbone.View.extend({
     this.updateStatus();
     this.updateVisibility();
     this.__render();
+    this._rendered = 1;
     return this;
   },
 
